@@ -1,0 +1,30 @@
+{
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "vite": "^3.0.2"
+  },
+  "name": "this-is-not-battle-city",
+  "description": "",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sergioherranzm/this-is-not-battle-city.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sergioherranzm/this-is-not-battle-city/issues"
+  },
+  "homepage": "https://github.com/sergioherranzm/this-is-not-battle-city#readme",
+  "devDependencies": {
+    "@types/lodash": "^4.14.182",
+    "@types/node": "^18.0.6",
+    "typescript": "^4.7.4"
+  }
+}
