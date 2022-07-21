@@ -18,7 +18,7 @@ window.onload = () => {
     new EnemyTankStandard({ x: 51, y: 250 }, Math.PI / 2),
     new EnemyTankRapid({ x: 300, y: 300 }, -Math.PI / 2),
     new EnemyTankStrong({ x: 800, y: 300 }, -Math.PI / 2),
-
+    new EnemyTankHeavy({ x: 900, y: 300 }, -Math.PI / 2),
   ];
 
   let gameGUI = new GameManager(ctx);
