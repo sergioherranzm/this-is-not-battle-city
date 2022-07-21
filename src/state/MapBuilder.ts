@@ -1,36 +1,48 @@
+import { Console } from 'console';
 import { Actor } from '../actors/Actor';
-import { mapLevel1, mapLevel2 } from './Maps'
+import { mapsBlueprints } from './Maps';
+import { actors } from '../script'
 
-let pacmanMap = `W`
-  .split('\n')
-  .map((f) => f.split(''));
 
-export class Map extends Actor {
-  draw(ctx: CanvasRenderingContext2D, delta: number): void {
-    const totalYRatio = 1000 / pacmanMap.length;
-    const totalXRatio = 1000 / pacmanMap[0].length;
 
-    pacmanMap.forEach((line, y) => {
-      line.forEach((char, x) => {
-        ctx.beginPath();
+export const MapBuilder = (level: number, canvasCtx: CanvasRenderingContext2D) => {
 
-        if (char === 'W') {
-          ctx.rect(x * totalXRatio, y * totalYRatio, totalXRatio, totalYRatio);
-        }
-        if (char === '.') {
-          ctx.arc(
-            x * totalXRatio + totalXRatio / 2,
-            y * totalYRatio + totalYRatio / 2,
-            6,
-            0,
-            angleToRad(360)
-          );
-        }
+  if (level < 0) {
+    //Level random
+    //call RandomMapGemerator();
+  } else {
+    let map = mapsBlueprints[level].split('\n').map((row) => row.trim().split(''));
 
-        ctx.closePath();
-        ctx.fill();
-        ctx.stroke();
+    const w = 100; //ctx.canvas.width / 13;
+    const h = 100; //(ctx.canvas.height - 200) / 13;
+
+    let x_pos = 0;
+    let y_pos = 200;
+
+    map.forEach((row, y) => {
+      x_pos = 0;
+      row.forEach((char, x) => {
+        switch (char) {
+          case '.': // whitespace
+
+            break;
+          case '%': //player spawnpoint
+
+            break;
+          case '*': //enemy spawnpoint
+
+            break;
+          case 'O': //destrutible block
+            canvasCtx.fillStyle = 'blue';
+            canvasCtx.fillRect(x_pos, y_pos, w, h);
+            break;
+          default:
+            console.log('Character not valid in map template:', char);
+            break;
+        };
+        x_pos += w;
       });
+      y_pos += h;
     });
-  }
-}
+  };
+};

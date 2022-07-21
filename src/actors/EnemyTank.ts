@@ -84,7 +84,7 @@ export class EnemyTank extends Actor {
     if (this.timerShoot > 1) {
       this.timerShoot = 0
       //console.log(actors)
-      actors.push(new Bullet({ x: this.position.x + (this.size.width / 2 * Math.cos(this.tankAngle)), y: this.position.y + (this.size.height / 2 * Math.sin(this.tankAngle)) }, 'Foe', this.bulletPower, this.tankAngle))
+      actors.push(new Bullet({ x: this.position.x + (this.size.width / 2 * Math.cos(this.tankAngle)), y: this.position.y + (this.size.height / 2 * Math.sin(this.tankAngle)) }, 'Foe', this.bulletPower, this.tankAngle, this))
     }
   }
 

@@ -9,19 +9,19 @@ export class EnemyTankStandard extends EnemyTank {
 
 export class EnemyTankHeavy extends EnemyTank {
   constructor(position: Point, angle: number) {
-    super(position, angle, 5, 'red', 80, 1);
+    super(position, angle, 5, 'black', 80, 1);
   }
 }
 
 export class EnemyTankRapid extends EnemyTank {
   constructor(position: Point, angle: number) {
-    super(position, angle, 1, 'red', 150, 1);
+    super(position, angle, 1, 'pink', 150, 1);
   }
 }
 
 export class EnemyTankStrong extends EnemyTank {
   constructor(position: Point, angle: number) {
-    super(position, angle, 2, 'red', 60, 2);
+    super(position, angle, 2, 'green', 60, 2);
   }
 }
 

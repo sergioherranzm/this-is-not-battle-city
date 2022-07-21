@@ -123,7 +123,7 @@ export class PlayerTank extends Actor {
       this.tankAngle = Math.PI / 2;
       this.tankMaxSpeed = this.tankDefaultMaxSpeed;
     } else if (mappedKey === CarKeys.FIRE) {
-      actors.push(new Bullet({ x: this.position.x + (this.size.width / 2 * Math.cos(this.tankAngle)), y: this.position.y + (this.size.height / 2 * Math.sin(this.tankAngle)) }, 'Friend', 1, this.tankAngle))
+      actors.push(new Bullet({ x: this.position.x + (this.size.width / 2 * Math.cos(this.tankAngle)), y: this.position.y + (this.size.height / 2 * Math.sin(this.tankAngle)) }, 'Friend', 1, this.tankAngle, this))
     };
   };
 

@@ -3,17 +3,20 @@ import { Point } from '../types/Point';
 import { Size } from '../types/Size';
 import { checkBulletCollisions, checkMapLimits } from '../utils/checkCollisions';
 import { actors } from '../script';
+import { EnemyTank } from './EnemyTank';
+import { PlayerTank } from './PlayerTank';
 
 export class Bullet extends Actor {
   bulletColor: string;
   bulletAngle: number;
   bulletSpeed: number;
+  shooter: EnemyTank | PlayerTank
 
   bulletDefaultSpeed: number;
 
-  constructor(position: Point, IFF: string, health: number, direction: number) {
+  constructor(position: Point, IFF: string, health: number, direction: number, shooter: EnemyTank | PlayerTank) {
     super(position, IFF, health);
-    this.size = { width: 20, height: 20 };
+    this.size = { width: 15, height: 15 };
     if (IFF === 'Foe') {
       this.bulletColor = 'red';
     } else {
@@ -23,7 +26,7 @@ export class Bullet extends Actor {
     this.bulletDefaultSpeed = 700;
     this.bulletAngle = direction;
     this.bulletSpeed = this.bulletDefaultSpeed;
-    //console.log('vida', health)
+    this.shooter = shooter;
   }
 
   update(delta: number): void {
@@ -47,7 +50,7 @@ export class Bullet extends Actor {
       this.health = 0
     }
 
-    checkBulletCollisions(this)
+    checkBulletCollisions(this, this.shooter)
   }
 
   draw(ctx: CanvasRenderingContext2D, delta: number): void {

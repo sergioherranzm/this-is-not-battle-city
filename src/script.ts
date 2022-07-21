@@ -1,8 +1,8 @@
 import { IActor } from './actors/Actor';
 import { PlayerTank } from './actors/PlayerTank';
 import { Bullet } from './actors/Bullet';
-import { FPSViewer } from './state/FPSViewer';
-import { GameInstance, createGameInstance } from './state/GameManager';
+//import { FPSViewer } from './state/FPSViewer';
+import { GameManager } from './state/GameManager';
 import { MAP_P1, MAP_P2 } from './utils/keyboardMap';
 import { EnemyTankStandard, EnemyTankRapid, EnemyTankHeavy, EnemyTankStrong } from './actors/EnemyTankClasses';
 
@@ -14,13 +14,14 @@ window.onload = () => {
 
   //createCircuit(car);
   actors = [
-    new FPSViewer({ x: 900, y: 30 }),
-    new PlayerTank({ x: 550, y: 650 }, 2, -Math.PI / 2, MAP_P1),
+    new PlayerTank({ x: 650, y: 850 }, 3, -Math.PI / 2, MAP_P1),
     new EnemyTankStandard({ x: 51, y: 250 }, Math.PI / 2),
-    new EnemyTankStandard({ x: 300, y: 300 }, -Math.PI / 2),
-    //new EnemyTankStandard({ x: 800, y: 300 }, -Math.PI / 2),
+    new EnemyTankRapid({ x: 300, y: 300 }, -Math.PI / 2),
+    new EnemyTankStrong({ x: 800, y: 300 }, -Math.PI / 2),
 
   ];
+
+  let gameGUI = new GameManager(ctx);
 
   let lastFrame = 0;
   //Bucle de renderizado
@@ -28,11 +29,15 @@ window.onload = () => {
     let delta = (time - lastFrame) / 1000;
     lastFrame = time;
 
+    gameGUI.update(delta)
+
     actors.forEach((actor) => {
       actor.update(delta);
     });
 
-    ctx.clearRect(0, 0, 1000, 1200);
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+    gameGUI.draw(ctx, delta)
 
     actors.forEach((actor) => {
       ctx.save();
@@ -44,7 +49,7 @@ window.onload = () => {
     if (actors.filter(e => (e instanceof PlayerTank)).length = 0) {
       console.log('insertnado new player')
       actors.push(new PlayerTank({ x: 550, y: 650 }, 2, -Math.PI / 2, MAP_P1))
-    }
+    }//----------------------------------------------------------------------
 
     window.requestAnimationFrame(render);
   };
