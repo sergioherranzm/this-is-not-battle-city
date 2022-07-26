@@ -1,22 +1,24 @@
 import { Actor } from './Actor';
 import { Point } from '../types/Point';
-import { Size } from '../types/Size';
 import { checkBulletCollisions, checkMapLimits } from '../utils/checkCollisions';
 import { actors } from '../script';
 import { EnemyTank } from './EnemyTank';
 import { PlayerTank } from './PlayerTank';
+import sprite_1 from '../assets/actors/Medium_Shell.png'
+import sprite_2 from '../assets/actors/Heavy_Shell.png'
 
 export class Bullet extends Actor {
   bulletColor: string;
   bulletAngle: number;
   bulletSpeed: number;
   shooter: EnemyTank | PlayerTank
+  actorSprite: HTMLImageElement;
 
   bulletDefaultSpeed: number;
 
   constructor(position: Point, IFF: string, health: number, direction: number, shooter: EnemyTank | PlayerTank) {
-    super(position, IFF, health);
-    this.size = { width: 15, height: 15 };
+    super(position, IFF, health, false, true, true);
+
     if (IFF === 'Foe') {
       this.bulletColor = 'red';
     } else {
@@ -27,7 +29,17 @@ export class Bullet extends Actor {
     this.bulletAngle = direction;
     this.bulletSpeed = this.bulletDefaultSpeed;
     this.shooter = shooter;
-  }
+
+    this.actorSprite = new Image();
+    if (health > 1) {
+      this.size = { width: 12, height: 38 };
+      this.actorSprite.src = sprite_2;
+    } else {
+      this.size = { width: 12, height: 27 };
+      this.actorSprite.src = sprite_1;
+    };
+
+  };
 
   update(delta: number): void {
 
@@ -46,7 +58,6 @@ export class Bullet extends Actor {
     if (checkMapLimits(newPos, this.size)) {
       this.position = newPos;
     } else {
-      //console.log(actors.indexOf(this))
       this.health = 0
     }
 
@@ -54,36 +65,26 @@ export class Bullet extends Actor {
   }
 
   draw(ctx: CanvasRenderingContext2D, delta: number): void {
+
+    ctx.translate(this.position.x, this.position.y);
+    ctx.rotate(this.bulletAngle + Math.PI / 2);
+
+    if (this.actorSprite.src === sprite_1) {
+      ctx.drawImage(this.actorSprite, 55, 45, 17, 38, - this.size.width / 2, - this.size.height / 2, this.size.width, this.size.height)
+    } else {
+      ctx.drawImage(this.actorSprite, 54, 32, 20, 63, - this.size.width / 2, - this.size.height / 2, this.size.width, this.size.height)
+    };
+
+    /*
     ctx.fillStyle = this.bulletColor;
     ctx.strokeStyle = this.bulletColor;
-    //ctx.lineWidth = 1;
 
     ctx.translate(this.position.x, this.position.y);
 
     ctx.rotate(this.bulletAngle + Math.PI / 2);
 
     ctx.fillRect(-this.size.width / 2, -this.size.height / 2, this.size.width, this.size.height)
-    /*
-    ctx.beginPath();
-    ctx.moveTo(-this.bulletSize.width / 16, -this.bulletSize.height / 2);
-    ctx.lineTo(-this.bulletSize.width / 16, -this.bulletSize.height / 3)
-    ctx.lineTo(-this.bulletSize.width / 2, -this.bulletSize.height / 3)
-    ctx.lineTo(-this.bulletSize.width / 2, this.bulletSize.height / 2)
-    ctx.lineTo(this.bulletSize.width / 2, this.bulletSize.height / 2)
-    ctx.lineTo(this.bulletSize.width / 2, -this.bulletSize.height / 3)
-    ctx.lineTo(this.bulletSize.width / 16, -this.bulletSize.height / 3)
-    ctx.lineTo(this.bulletSize.width / 16, -this.bulletSize.height / 2)
-    ctx.closePath();
-    ctx.stroke();
-    ctx.fill();
     */
-    //ctx.rotate(angleToRad(180)); // this is for the ferrari orientation
-    /*ctx.drawImage(
-      -this.carSize.height / 2,
-      -this.carSize.width / 2,
-      this.carSize.height,
-      this.carSize.width
-    );*/
   };
 
-}
+};

@@ -1,26 +1,28 @@
 import { Actor } from './Actor';
 import { Point } from '../types/Point';
-import { Size } from '../types/Size';
 import { checkMapLimits, checkMoveCollisions } from '../utils/checkCollisions';
 import { CarKeys, KeyboardMap } from '../utils/keyboardMap';
 import { actors } from '../script';
 import { Bullet } from './Bullet';
+import sprite_1 from '../assets/actors/Player_Tank_A.png'
+import sprite_2 from '../assets/actors/Player_Tank_B.png'
+import { Timer } from '../types/Timer';
 
 export class PlayerTank extends Actor {
-  tankColor: string;
   tankDrawAngle: number;
   tankAngle: number;
   tankSpeed: number;
   tankMaxSpeed: number;
   keyboardMap: KeyboardMap;
+  actorSprite: HTMLImageElement;
+  timerTankMove: Timer;
 
   tankDefaultMaxSpeed: number;
   tankDefaultAngleSpeed: number;
 
   constructor(position: Point, health: number, angle: number, keyboardMap: KeyboardMap) {
-    super(position, 'Friend', health);
-    this.size = { width: 100, height: 100 };
-    this.tankColor = 'orange';
+    super(position, 'Friend', health, true, true, true);
+    this.size = { width: 73, height: 85 };
     this.tankDefaultAngleSpeed = 500;
     this.tankDefaultMaxSpeed = 300;
     this.tankDrawAngle = angle;
@@ -30,10 +32,19 @@ export class PlayerTank extends Actor {
     this.keyboardMap = keyboardMap;
     this.newPos = position;
     this.newPosGuess = position;
+
+    this.actorSprite = new Image();
+    this.actorSprite.src = sprite_1;
+    this.timerTankMove = { active: true, time: 0 }
+
   }
 
   update(delta: number): void {
 
+    //Update timers
+    this.timerTankMove.time += delta;
+
+    //Check life
     if (this.health <= 0) {
       const actorToRemove = actors.indexOf(this)
       actors.splice(actorToRemove, 1)
@@ -48,8 +59,11 @@ export class PlayerTank extends Actor {
       this.tankDrawAngle = 0
     }
 
-    this.tankSpeed = this.tankSpeed * 0.6 + this.tankMaxSpeed;
-    //console.log('acc', this.tankAcceleration, 'vel', this.tankSpeed);//-----------------------------------
+    this.tankSpeed = this.tankSpeed * 0.3 + this.tankMaxSpeed;
+    if (this.tankSpeed < 0.1) {
+      this.tankSpeed = 0
+    };
+
     this.newPos = {
       x:
         this.position.x + (Math.cos(this.tankAngle) * this.tankSpeed * delta),
@@ -64,23 +78,37 @@ export class PlayerTank extends Actor {
         this.newPos.y + (Math.sin(this.tankAngle) * this.tankSpeed * delta),
     };
 
-
+    // Check collisions
     if (checkMapLimits(this.newPos, this.size) && !checkMoveCollisions(this)) {
       this.position = this.newPos;
-    }
+    };
 
-  }
+    //Animation
+    if (this.tankSpeed > 0 && this.timerTankMove.time > 0.5) { ///***************************************************** no funciona*/
+      console.log(this.timerTankMove.time)
+      if (this.actorSprite.src === sprite_1) {
+        console.log('cambiando sprite')
+        this.actorSprite.src = sprite_2;
+      } else if (this.actorSprite.src === sprite_2) {
+        console.log('cambiando sprite')
+        this.actorSprite.src = sprite_1;
+      } else {
+        console.log('No CAMBIANDO')
+      };
+      this.timerTankMove.time = 0
+    };
+
+  };
 
   draw(ctx: CanvasRenderingContext2D, delta: number): void {
-    ctx.fillStyle = this.tankColor;
-    ctx.strokeStyle = this.tankColor;
-    //ctx.lineWidth = 1;
-
-    ctx.rect(this.position.x, this.position.y, this.size.width, this.size.height);
 
     ctx.translate(this.position.x, this.position.y);
-
     ctx.rotate(this.tankAngle + Math.PI / 2);
+    ctx.drawImage(this.actorSprite, - this.size.width / 2, - this.size.height / 2, this.size.width, this.size.height)
+
+    /*
+    ctx.fillStyle = this.tankColor;
+    ctx.strokeStyle = this.tankColor;
 
     ctx.beginPath();
     ctx.moveTo(-this.size.width / 16, -this.size.height / 2);
@@ -94,18 +122,8 @@ export class PlayerTank extends Actor {
     ctx.closePath();
     ctx.stroke();
     ctx.fill();
+    */
 
-    ctx.rect(this.position.x, this.position.y, this.size.width, this.size.height);
-
-
-
-    //ctx.rotate(angleToRad(180)); // this is for the ferrari orientation
-    /*ctx.drawImage(
-      -this.carSize.height / 2,
-      -this.carSize.width / 2,
-      this.carSize.height,
-      this.carSize.width
-    );*/
   };
 
   keyboard_event_down(key: string): void {

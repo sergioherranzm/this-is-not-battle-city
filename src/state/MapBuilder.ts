@@ -2,10 +2,11 @@ import { Console } from 'console';
 import { Actor } from '../actors/Actor';
 import { mapsBlueprints } from './Maps';
 import { actors } from '../script'
+import { DestructibleBlock, NotDestructibleBlock } from '../actors/MapBlockClasses';
 
 
 
-export const MapBuilder = (level: number, canvasCtx: CanvasRenderingContext2D) => {
+export const MapBuilder = (level: number) => {
 
   if (level < 0) {
     //Level random
@@ -33,8 +34,10 @@ export const MapBuilder = (level: number, canvasCtx: CanvasRenderingContext2D) =
 
             break;
           case 'O': //destrutible block
-            canvasCtx.fillStyle = 'blue';
-            canvasCtx.fillRect(x_pos, y_pos, w, h);
+            actors.push(new DestructibleBlock({ x: x_pos + w / 2, y: y_pos + h / 2 }))
+            break;
+          case 'X': //not destrutible block
+            actors.push(new NotDestructibleBlock({ x: x_pos + w / 2, y: y_pos + h / 2 }))
             break;
           default:
             console.log('Character not valid in map template:', char);

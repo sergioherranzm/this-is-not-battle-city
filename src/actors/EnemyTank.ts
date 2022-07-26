@@ -5,9 +5,9 @@ import { checkMapLimits, checkMoveCollisions } from '../utils/checkCollisions';
 import { actors } from '../script';
 import { Bullet } from './Bullet';
 import lodash from 'lodash'
+import { Timer } from '../types/Timer';
 
 export class EnemyTank extends Actor {
-  tankColor: string;
   tankDrawAngle: number;
   tankAngle: number;
   tankSpeed: number;
@@ -15,16 +15,17 @@ export class EnemyTank extends Actor {
   timerShoot: number;
   timerChangeDirection: number;
   bulletPower: number;
+  actorSprite: HTMLImageElement;
+  timerTankMove: Timer;
 
   tankDefaultMaxSpeed: number;
   tankDefaultAngleSpeed: number;
 
   constructor(position: Point, angle: number, health: number, sprite: string, speed: number, bulletPower: number) {
-    super(position, 'Foe', health);
-    this.size = { width: 100, height: 100 };
+    super(position, 'Foe', health, true, true, true);
+    this.size = { width: 85, height: 85 };
     this.tankDefaultAngleSpeed = 500;
 
-    this.tankColor = sprite;
     this.tankDefaultMaxSpeed = speed;
     this.bulletPower = bulletPower;
 
@@ -37,10 +38,18 @@ export class EnemyTank extends Actor {
 
     this.timerShoot = 0
     this.timerChangeDirection = 0
+
+    this.actorSprite = new Image();
+    this.actorSprite.src = sprite;
+    this.timerTankMove = { active: true, time: 0 }
   }
 
   update(delta: number): void {
 
+    //Update timers
+    this.timerTankMove.time += delta;
+
+    //Check life
     if (this.health <= 0) {
       const actorToRemove = actors.indexOf(this)
       actors.splice(actorToRemove, 1)
@@ -71,7 +80,7 @@ export class EnemyTank extends Actor {
         this.newPos.y + (Math.sin(this.tankAngle) * this.tankSpeed * delta),
     };
 
-
+    // Check collisions
     if (checkMapLimits(this.newPos, this.size) && !checkMoveCollisions(this)) {
       this.position = this.newPos;
     } else {
@@ -89,6 +98,12 @@ export class EnemyTank extends Actor {
   }
 
   draw(ctx: CanvasRenderingContext2D, delta: number): void {
+
+    ctx.translate(this.position.x, this.position.y);
+    ctx.rotate(this.tankAngle + Math.PI / 2);
+    ctx.drawImage(this.actorSprite, - this.size.width / 2, - this.size.height / 2, this.size.width, this.size.height)
+
+    /*
     ctx.fillStyle = this.tankColor;
     ctx.strokeStyle = this.tankColor;
     //ctx.lineWidth = 1;
@@ -109,14 +124,7 @@ export class EnemyTank extends Actor {
     ctx.closePath();
     ctx.stroke();
     ctx.fill();
-
-    //ctx.rotate(angleToRad(180)); // this is for the ferrari orientation
-    /*ctx.drawImage(
-      -this.carSize.height / 2,
-      -this.carSize.width / 2,
-      this.carSize.height,
-      this.carSize.width
-    );*/
+    */
   };
 
   getNewRandomDirection(): void {

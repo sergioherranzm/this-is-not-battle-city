@@ -15,13 +15,13 @@ window.onload = () => {
   //createCircuit(car);
   actors = [
     new PlayerTank({ x: 650, y: 850 }, 3, -Math.PI / 2, MAP_P1),
-    new EnemyTankStandard({ x: 51, y: 250 }, Math.PI / 2),
+    new EnemyTankStandard({ x: 200, y: 250 }, Math.PI / 2),
     new EnemyTankRapid({ x: 300, y: 300 }, -Math.PI / 2),
     new EnemyTankStrong({ x: 800, y: 300 }, -Math.PI / 2),
     new EnemyTankHeavy({ x: 900, y: 300 }, -Math.PI / 2),
   ];
 
-  let gameGUI = new GameManager(ctx);
+  let gameGUI = new GameManager();
 
   let lastFrame = 0;
   //Bucle de renderizado
