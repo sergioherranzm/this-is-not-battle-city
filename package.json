@@ -9,7 +9,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "vite",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "ghbuild": "vite build --outDir docs --base=/this-is-not-battle-city"
   },
   "repository": {
     "type": "git",
