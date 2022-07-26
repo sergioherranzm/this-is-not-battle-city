@@ -152,9 +152,15 @@ export class GameManager implements IGameManager {
         h.position = { x: 1220 - (70 * i), y: 85 }
       })
         ;
-    }
+    };
+
+    if (!actors.some(e => (e instanceof PlayerTank))) {
+      actors.push(new PlayerTank({ x: 550, y: 650 }, 3, -Math.PI / 2, MAP_P1));
+    };
 
   };
+
+
 };
 
 

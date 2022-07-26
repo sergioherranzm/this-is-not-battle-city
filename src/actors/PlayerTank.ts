@@ -7,6 +7,8 @@ import { Bullet } from './Bullet';
 import sprite_1 from '../assets/actors/Player_Tank_A.png'
 import sprite_2 from '../assets/actors/Player_Tank_B.png'
 import { Timer } from '../types/Timer';
+const audioURL = new URL('../assets/sounds/8-Bit_Punch.mp3', import.meta.url)
+
 
 export class PlayerTank extends Actor {
   tankDrawAngle: number;
@@ -16,6 +18,8 @@ export class PlayerTank extends Actor {
   keyboardMap: KeyboardMap;
   actorSprite: HTMLImageElement;
   timerTankMove: Timer;
+  activeSprite: string;
+  actorAudioShot: HTMLAudioElement;
 
   tankDefaultMaxSpeed: number;
   tankDefaultAngleSpeed: number;
@@ -35,7 +39,11 @@ export class PlayerTank extends Actor {
 
     this.actorSprite = new Image();
     this.actorSprite.src = sprite_1;
+    this.activeSprite = 'sprite_1';
     this.timerTankMove = { active: true, time: 0 }
+
+    this.actorAudioShot = new Audio(audioURL.toString());
+    this.actorAudioShot.volume = 1;
 
   }
 
@@ -84,16 +92,15 @@ export class PlayerTank extends Actor {
     };
 
     //Animation
-    if (this.tankSpeed > 0 && this.timerTankMove.time > 0.5) { ///***************************************************** no funciona*/
-      console.log(this.timerTankMove.time)
-      if (this.actorSprite.src === sprite_1) {
-        console.log('cambiando sprite')
+    if (this.tankSpeed > 0 && this.timerTankMove.time > 0.06) {
+      console.log(this.actorSprite.src, sprite_1)
+
+      if (this.activeSprite === 'sprite_1') {
         this.actorSprite.src = sprite_2;
-      } else if (this.actorSprite.src === sprite_2) {
-        console.log('cambiando sprite')
+        this.activeSprite = 'sprite_2'
+      } else if (this.activeSprite === 'sprite_2') {
         this.actorSprite.src = sprite_1;
-      } else {
-        console.log('No CAMBIANDO')
+        this.activeSprite = 'sprite_1'
       };
       this.timerTankMove.time = 0
     };
@@ -141,7 +148,9 @@ export class PlayerTank extends Actor {
       this.tankAngle = Math.PI / 2;
       this.tankMaxSpeed = this.tankDefaultMaxSpeed;
     } else if (mappedKey === CarKeys.FIRE) {
+      this.actorAudioShot.load()
       actors.push(new Bullet({ x: this.position.x + (this.size.width / 2 * Math.cos(this.tankAngle)), y: this.position.y + (this.size.height / 2 * Math.sin(this.tankAngle)) }, 'Friend', 1, this.tankAngle, this))
+      this.actorAudioShot.play()
     };
   };
 

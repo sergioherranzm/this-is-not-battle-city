@@ -45,11 +45,11 @@ window.onload = () => {
       ctx.restore();
     });
 
-    //NO FUNCIONA------------------------------------------------------------
+    /*//NO FUNCIONA------------------------------------------------------------
     if (actors.filter(e => (e instanceof PlayerTank)).length = 0) {
       console.log('insertnado new player')
-      actors.push(new PlayerTank({ x: 550, y: 650 }, 2, -Math.PI / 2, MAP_P1))
-    }//----------------------------------------------------------------------
+      actors.push(new PlayerTank({ x: 550, y: 650 }, 1, -Math.PI / 2, MAP_P1))
+    }//----------------------------------------------------------------------*/
 
     window.requestAnimationFrame(render);
   };

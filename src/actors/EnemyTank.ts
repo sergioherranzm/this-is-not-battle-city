@@ -16,12 +16,15 @@ export class EnemyTank extends Actor {
   timerChangeDirection: number;
   bulletPower: number;
   actorSprite: HTMLImageElement;
+  actorSpriteString_1: string;
+  actorSpriteString_2: string;
+  activeSprite: string;
   timerTankMove: Timer;
 
   tankDefaultMaxSpeed: number;
   tankDefaultAngleSpeed: number;
 
-  constructor(position: Point, angle: number, health: number, sprite: string, speed: number, bulletPower: number) {
+  constructor(position: Point, angle: number, health: number, sprite_1: string, sprite_2: string, speed: number, bulletPower: number) {
     super(position, 'Foe', health, true, true, true);
     this.size = { width: 85, height: 85 };
     this.tankDefaultAngleSpeed = 500;
@@ -39,8 +42,11 @@ export class EnemyTank extends Actor {
     this.timerShoot = 0
     this.timerChangeDirection = 0
 
+    this.actorSpriteString_1 = sprite_1;
+    this.actorSpriteString_2 = sprite_2;
+    this.activeSprite = 'sprite_1';
     this.actorSprite = new Image();
-    this.actorSprite.src = sprite;
+    this.actorSprite.src = sprite_1;
     this.timerTankMove = { active: true, time: 0 }
   }
 
@@ -94,8 +100,20 @@ export class EnemyTank extends Actor {
       this.timerShoot = 0
       //console.log(actors)
       actors.push(new Bullet({ x: this.position.x + (this.size.width / 2 * Math.cos(this.tankAngle)), y: this.position.y + (this.size.height / 2 * Math.sin(this.tankAngle)) }, 'Foe', this.bulletPower, this.tankAngle, this))
-    }
-  }
+    };
+
+    //Animation
+    if (this.tankSpeed > 0 && this.timerTankMove.time > 0.06) {
+      if (this.activeSprite === 'sprite_1') {
+        this.actorSprite.src = this.actorSpriteString_2;
+        this.activeSprite = 'sprite_2'
+      } else if (this.activeSprite === 'sprite_2') {
+        this.actorSprite.src = this.actorSpriteString_1;
+        this.activeSprite = 'sprite_1'
+      };
+      this.timerTankMove.time = 0
+    };
+  };
 
   draw(ctx: CanvasRenderingContext2D, delta: number): void {
 
