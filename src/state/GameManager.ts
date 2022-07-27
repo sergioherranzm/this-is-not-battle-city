@@ -132,7 +132,7 @@ export class GameManager implements IGameManager {
         this.aHearthsP1.push(new GUIHearth({ x: 0, y: 0 }))
       }
       this.aHearthsP1.forEach((h, i) => {
-        h.position = { x: 20 + (60 * i), y: 90 }
+        h.position = { x: 20 + (60 * i), y: 80 }
       })
         ;
     }
