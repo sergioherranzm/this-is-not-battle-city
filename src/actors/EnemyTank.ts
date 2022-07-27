@@ -53,7 +53,9 @@ export class EnemyTank extends Actor {
   update(delta: number): void {
 
     //Update timers
-    this.timerTankMove.time += delta;
+    if (this.timerTankMove.active === true) {
+      this.timerTankMove.time += delta;
+    }
 
     //Check life
     if (this.health <= 0) {
