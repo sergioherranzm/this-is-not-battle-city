@@ -7,7 +7,8 @@ import { Bullet } from './Bullet';
 import sprite_1 from '../assets/actors/Player_Tank_A.png'
 import sprite_2 from '../assets/actors/Player_Tank_B.png'
 import { Timer } from '../types/Timer';
-const audioURL = new URL('../assets/sounds/8-Bit_Punch.mp3', import.meta.url)
+const audioURLShot = new URL('../assets/sounds/shot.mp3', import.meta.url)
+const audioURLIdle = new URL('../assets/sounds/motor_idle.mp3', import.meta.url)
 
 
 export class PlayerTank extends Actor {
@@ -18,8 +19,11 @@ export class PlayerTank extends Actor {
   keyboardMap: KeyboardMap;
   actorSprite: HTMLImageElement;
   timerTankMove: Timer;
+  timerIdle: Timer;
   activeSprite: string;
-  actorAudioShot: HTMLAudioElement;
+  audioShot: HTMLAudioElement;
+  audioIdle: HTMLAudioElement;
+  audioIdle2: HTMLAudioElement;
 
   tankDefaultMaxSpeed: number;
   tankDefaultAngleSpeed: number;
@@ -42,15 +46,29 @@ export class PlayerTank extends Actor {
     this.activeSprite = 'sprite_1';
     this.timerTankMove = { active: true, time: 0 }
 
-    this.actorAudioShot = new Audio(audioURL.toString());
-    this.actorAudioShot.volume = 1;
+    this.audioShot = new Audio(audioURLShot.toString());
+    this.audioShot.volume = 1;
+
+    this.audioIdle = new Audio(audioURLIdle.toString());
+    this.audioIdle.volume = 0.06;
+    this.audioIdle.loop = true
+    this.audioIdle2 = new Audio(audioURLIdle.toString());
+    this.audioIdle2.volume = 0.06;
+    this.audioIdle2.loop = true
+    this.timerIdle = { active: true, time: 0 }
+
 
   }
 
   update(delta: number): void {
 
     //Update timers
-    this.timerTankMove.time += delta;
+    if (this.timerTankMove.active === true) {
+      this.timerTankMove.time += delta;
+    }
+    if (this.timerIdle.active === true) {
+      this.timerIdle.time += delta;
+    }
 
     //Check life
     if (this.health <= 0) {
@@ -105,6 +123,15 @@ export class PlayerTank extends Actor {
       this.timerTankMove.time = 0
     };
 
+    if (this.tankSpeed === 0) {
+      //this.audioIdle.play()
+      if (this.timerIdle.time > 1) {
+        //this.audioIdle2.play()
+        this.timerIdle.time = 0;
+      };
+
+    };
+
   };
 
   draw(ctx: CanvasRenderingContext2D, delta: number): void {
@@ -138,19 +165,27 @@ export class PlayerTank extends Actor {
     if (mappedKey === CarKeys.LEFT) {
       this.tankAngle = Math.PI;
       this.tankMaxSpeed = this.tankDefaultMaxSpeed
+      this.audioIdle.load();
+      this.audioIdle2.load();
     } else if (mappedKey === CarKeys.RIGHT) {
       this.tankAngle = 0;
       this.tankMaxSpeed = this.tankDefaultMaxSpeed;
+      this.audioIdle.load();
+      this.audioIdle2.load();
     } else if (mappedKey === CarKeys.UP) {
       this.tankAngle = -Math.PI / 2;
       this.tankMaxSpeed = this.tankDefaultMaxSpeed;
+      this.audioIdle.load();
+      this.audioIdle2.load();
     } else if (mappedKey === CarKeys.DOWN) {
       this.tankAngle = Math.PI / 2;
       this.tankMaxSpeed = this.tankDefaultMaxSpeed;
+      this.audioIdle.load();
+      this.audioIdle2.load();
     } else if (mappedKey === CarKeys.FIRE) {
-      this.actorAudioShot.load()
+      this.audioShot.load()
       actors.push(new Bullet({ x: this.position.x + (this.size.width / 2 * Math.cos(this.tankAngle)), y: this.position.y + (this.size.height / 2 * Math.sin(this.tankAngle)) }, 'Friend', 1, this.tankAngle, this))
-      this.actorAudioShot.play()
+      this.audioShot.play()
     };
   };
 
