@@ -5,6 +5,27 @@ import { Bullet } from '../actors/Bullet';
 import { Actor } from '../actors/Actor';
 import { EnemyTank } from '../actors/EnemyTank';
 import { PlayerTank } from '../actors/PlayerTank';
+import { DestructibleBlock, NotDestructibleBlock } from '../actors/MapBlockClasses';
+
+let audioURL = new URL('../assets/sounds/hit_enemy.mp3', import.meta.url)
+const audioHitEnemy = new Audio(audioURL.toString());
+
+audioURL = new URL('../assets/sounds/hit_player.mp3', import.meta.url)
+const audioHitPlayer = new Audio(audioURL.toString());
+
+audioURL = new URL('../assets/sounds/hit_box.mp3', import.meta.url)
+const audioHitBox = new Audio(audioURL.toString());
+
+audioURL = new URL('../assets/sounds/destroy_box.mp3', import.meta.url)
+const audioDestroyBox = new Audio(audioURL.toString());
+
+audioURL = new URL('../assets/sounds/hit_rock.mp3', import.meta.url)
+const audioHitRock = new Audio(audioURL.toString());
+
+audioHitEnemy.volume = 1;
+audioHitPlayer.volume = 1;
+audioHitBox.volume = 0.4;
+audioDestroyBox.volume = 0.15;
 
 export const checkMapLimits = (position: Point, size: Size): boolean => {
   return (
@@ -37,6 +58,24 @@ export const checkBulletCollisions = (attackBullet: Bullet, shooter: EnemyTank |
           defenderActor.health -= attackBullet.health
         }
         attackBullet.health = 0
+        if (defenderActor instanceof EnemyTank && shooter instanceof PlayerTank) {
+          audioHitEnemy.load()
+          audioHitEnemy.play()
+        } else if (defenderActor instanceof PlayerTank && shooter instanceof EnemyTank) {
+          audioHitPlayer.load()
+          audioHitPlayer.play()
+        } else if (defenderActor instanceof DestructibleBlock && shooter instanceof PlayerTank) {
+          if (defenderActor.health === 0) {
+            audioDestroyBox.load()
+            audioDestroyBox.play()
+          } else {
+            audioHitBox.load()
+            audioHitBox.play()
+          }
+        } else if ((defenderActor instanceof NotDestructibleBlock || defenderActor instanceof Bullet) && shooter instanceof PlayerTank) {
+          audioHitRock.load()
+          audioHitRock.play()
+        }
       }
     }
   });
