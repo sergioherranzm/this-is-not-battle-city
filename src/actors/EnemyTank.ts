@@ -1,6 +1,5 @@
 import { Actor } from './Actor';
 import { Point } from '../types/Point';
-import { Size } from '../types/Size';
 import { checkMapLimits, checkMoveCollisions } from '../utils/checkCollisions';
 import { actors } from '../script';
 import { Bullet } from './Bullet';
@@ -15,6 +14,8 @@ export class EnemyTank extends Actor {
   tankSpeed: number;
   tankMaxSpeed: number;
   timerShoot: number;
+  tankshootSpeed: number;
+  tankScore: number;
   timerChangeDirection: number;
   bulletPower: number;
   actorSprite: HTMLImageElement;
@@ -31,13 +32,16 @@ export class EnemyTank extends Actor {
   tankDefaultMaxSpeed: number;
   tankDefaultAngleSpeed: number;
 
-  constructor(position: Point, angle: number, health: number, sprite_1: string, sprite_2: string, speed: number, bulletPower: number) {
+  constructor(position: Point, angle: number, health: number, sprite_1: string, sprite_2: string, speed: number, bulletPower: number, shootSpeed: number, score: number) {
     super(position, 'Foe', health, true, true, true);
     this.size = { width: 85, height: 85 };
     this.tankDefaultAngleSpeed = 500;
 
     this.tankDefaultMaxSpeed = speed;
     this.bulletPower = bulletPower;
+
+    this.tankshootSpeed = shootSpeed;
+    this.tankScore = score;
 
     this.tankDrawAngle = angle;
     this.tankAngle = this.tankDrawAngle;
@@ -87,6 +91,9 @@ export class EnemyTank extends Actor {
       if (this.deathFrame === 0) {
         this.audioDeath.load()
         this.audioDeath.play()
+        this.actorCollisions = false;
+        this.bulletImpact = false;
+        this.bulletImpactDamage = false;
       } else if (this.deathFrame === 8) {
         const actorToRemove = actors.indexOf(this)
         actors.splice(actorToRemove, 1)
@@ -129,7 +136,7 @@ export class EnemyTank extends Actor {
 
       // Funcion de disparo automático cada x segundos
       this.timerShoot += delta
-      if (this.timerShoot > 1) {
+      if (this.timerShoot > this.tankshootSpeed) {
         this.timerShoot = 0
         actors.push(new Bullet({ x: this.position.x + (this.size.width / 2 * Math.cos(this.tankAngle)), y: this.position.y + (this.size.height / 2 * Math.sin(this.tankAngle)) }, 'Foe', this.bulletPower, this.tankAngle, this))
       };

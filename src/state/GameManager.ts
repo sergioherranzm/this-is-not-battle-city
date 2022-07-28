@@ -6,13 +6,14 @@ import { actors } from '../script'
 import { MapBuilder } from './MapBuilder'
 import { PlayerTank } from '../actors/PlayerTank';
 import { EnemyTank } from '../actors/EnemyTank';
+import { Timer } from '../types/Timer';
 import { MAP_P1, MAP_P2 } from '../utils/keyboardMap';
-import backgroundSprite from '../assets/background/Ground_Tile_01_B.png'
+import backgroundSpriteFile from '../assets/background/Ground_Tile_01_B.png'
 
 interface IGameManager {
   livesP1: number;
   livesP2?: number;
-  chrono: number;
+  chrono: Timer;
   level: string;
   enemies: number;
   score: number;
@@ -21,14 +22,16 @@ interface IGameManager {
   aHearthsP2?: IGUIItem[];
   aEnemies: IGUIItem[];
   backgroundSprite: HTMLImageElement;
+  pause: boolean;
   draw: (ctx: CanvasRenderingContext2D, delta: number) => void;
   update: (delta: number) => void;
+  paintBackground: (ctx: CanvasRenderingContext2D) => void;
 }
 
 export class GameManager implements IGameManager {
   livesP1: number;
   livesP2?: number;
-  chrono: number;
+  chrono: Timer;
   level: string;
   enemies: number;
   score: number;
@@ -37,11 +40,12 @@ export class GameManager implements IGameManager {
   aHearthsP2?: IGUIItem[];
   aEnemies: IGUIItem[];
   backgroundSprite: HTMLImageElement;
+  pause: boolean;
 
   constructor() {
 
     this.livesP1 = 0;
-    this.chrono = 0;
+    this.chrono = { time: 0, active: true }
     this.level = '1';
     this.enemies = 0;
     this.score = 0;
@@ -53,65 +57,15 @@ export class GameManager implements IGameManager {
     this.aEnemies = []
 
     this.backgroundSprite = new Image();
-    this.backgroundSprite.src = backgroundSprite;
-  }
+    this.backgroundSprite.src = backgroundSpriteFile;
 
-
-  draw(ctx: CanvasRenderingContext2D, delta: number): void {
-
-    //Background
-    ctx.fillStyle = 'black';
-    ctx.fillRect(0, 0, ctx.canvas.width, 200);
-
-    //ctx.fillStyle = 'silver';
-    //ctx.fillRect(0, 200, ctx.canvas.width, 1300);
-    for (let y = 200; y < ctx.canvas.height; y += 200) {
-      for (let x = 0; x < ctx.canvas.width; x += 200) {
-        ctx.drawImage(this.backgroundSprite, x, y, 200, 200)
-      }
-    }
-
-
-    ctx.fillStyle = 'white';
-    ctx.direction = 'ltr';
-
-    //FPSviewer
-    const fps = (1 / delta).toFixed(0);
-    ctx.font = '26px Arial';
-    ctx.fillText(`${fps} FPS`, 600, 30);
-
-    //Labels
-    ctx.fillStyle = 'white';
-    ctx.font = '60px Arial';
-
-    //Level
-    ctx.fillText(`LEVEL`, 560, 100);
-    ctx.fillText(`${this.level} `, 630, 170);
-
-    //Chrono
-    ctx.fillText(`TIME: ${this.chrono.toFixed(0)}`, 10, 60);
-
-    //Score
-    ctx.direction = 'rtl';
-    ctx.fillText(`SCORE: ${this.score}`, 1280, 60);
-    ctx.direction = 'ltr';
-
-    //Lives
-    this.aHearthsP1.forEach((h) => {
-      h.update(delta)
-      h.draw(ctx, delta)
-    })
-
-    //Enemies
-    this.aEnemies.forEach((h) => {
-      h.update(delta)
-      h.draw(ctx, delta)
-    })
-
+    this.pause = false;
   }
 
   update(delta: number): void {
-    this.chrono += delta;
+    if (this.chrono.active === true) {
+      this.chrono.time += delta;
+    }
 
     //Lives
     const actorsOnlyPlayers = actors.filter(act => (act instanceof PlayerTank)) as PlayerTank[]
@@ -122,6 +76,8 @@ export class GameManager implements IGameManager {
         this.livesP2 = actorsOnlyPlayers[i].health
       }*/
     };
+
+
 
     if (this.livesP1 < this.aHearthsP1.length) {
       for (let i = this.aHearthsP1.length; i > this.livesP1; i--) {
@@ -154,10 +110,72 @@ export class GameManager implements IGameManager {
         ;
     };
 
-    if (!actors.some(e => (e instanceof PlayerTank))) {
-      actors.push(new PlayerTank({ x: 550, y: 650 }, 3, -Math.PI / 2, MAP_P1));
-    };
+    //if (!actors.some(e => (e instanceof PlayerTank))) {
+    // actors.push(new PlayerTank({ x: 550, y: 650 }, 3, -Math.PI / 2, MAP_P1));
+    //};
 
+  };
+
+  draw(ctx: CanvasRenderingContext2D, delta: number): void {
+
+
+    ctx.fillStyle = 'white';
+    ctx.direction = 'ltr';
+
+    //FPSviewer
+    const fps = (1 / delta).toFixed(0);
+    ctx.font = '26px Verdana';
+    ctx.fillText(`${fps} FPS`, 600, 30);
+
+    //Labels
+    ctx.fillStyle = 'white';
+    ctx.font = '60px Verdana';
+
+    //Level
+    ctx.fillText(`LEVEL`, 560, 100);
+    ctx.fillText(`${this.level} `, 630, 170);
+
+    //Chrono
+    ctx.fillText(`TIME: ${this.chrono.time.toFixed(0)}`, 10, 60);
+
+    //Score
+    ctx.direction = 'rtl';
+    ctx.fillText(`SCORE: ${this.score}`, 1280, 60);
+    ctx.direction = 'ltr';
+
+    //Lives
+    this.aHearthsP1.forEach((h) => {
+      h.update(delta)
+      h.draw(ctx, delta)
+    })
+
+    //Enemies
+    this.aEnemies.forEach((h) => {
+      h.update(delta)
+      h.draw(ctx, delta)
+    })
+
+
+    //PAUSE
+    if (this.pause === true) {
+      ctx.fillStyle = 'white';
+      ctx.direction = 'ltr';
+      ctx.font = '200px Verdana';
+      ctx.fillText(`PAUSE`, 300, 850);
+    }
+
+  };
+
+  paintBackground(ctx: CanvasRenderingContext2D): void {
+
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0, 0, ctx.canvas.width, 200);
+
+    for (let y = 200; y < ctx.canvas.height; y += 200) {
+      for (let x = 0; x < ctx.canvas.width; x += 200) {
+        ctx.drawImage(this.backgroundSprite, x, y, 200, 200)
+      };
+    };
   };
 
 

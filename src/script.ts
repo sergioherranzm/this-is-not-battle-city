@@ -6,6 +6,15 @@ import { GameManager } from './state/GameManager';
 import { MAP_P1, MAP_P2 } from './utils/keyboardMap';
 import { EnemyTankStandard, EnemyTankRapid, EnemyTankHeavy, EnemyTankStrong } from './actors/EnemyTankClasses';
 
+let audioURL = new URL('./assets/sounds/pause.mp3', import.meta.url)
+const audioPause = new Audio(audioURL.toString());
+
+audioURL = new URL('./assets/sounds/play.mp3', import.meta.url)
+const audioPlay = new Audio(audioURL.toString());
+
+audioPause.volume = 1;
+audioPlay.volume = 1;
+
 export let actors: IActor[] = []
 
 window.onload = () => {
@@ -31,19 +40,26 @@ window.onload = () => {
 
     gameGUI.update(delta)
 
-    actors.forEach((actor) => {
-      actor.update(delta);
-    });
+    if (gameGUI.pause === false) {
+      actors.forEach((actor) => {
+        actor.update(delta);
+      });
+    };
 
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-    gameGUI.draw(ctx, delta)
+    gameGUI.paintBackground(ctx)
 
     actors.forEach((actor) => {
       ctx.save();
       actor.draw(ctx, delta);
       ctx.restore();
     });
+
+    gameGUI.draw(ctx, delta)
+
+
+
 
     /*//NO FUNCIONA------------------------------------------------------------
     if (actors.filter(e => (e instanceof PlayerTank)).length = 0) {
@@ -57,14 +73,34 @@ window.onload = () => {
   window.requestAnimationFrame(render);
 
   document.body.addEventListener('keydown', (e) => {
-    actors.forEach((actor) => {
-      actor.keyboard_event_down(e.key);
-    });
+    if (e.key === 'p') {
+      if (gameGUI.pause === false) {
+        gameGUI.pause = true;
+        gameGUI.chrono.active = false;
+        audioPause.load()
+        audioPause.play()
+      } else {
+        gameGUI.pause = false;
+        gameGUI.chrono.active = true;
+        audioPlay.load()
+        audioPlay.play()
+      }
+    } else {
+      if (gameGUI.pause === false) {
+        actors.forEach((actor) => {
+          actor.keyboard_event_down(e.key);
+        });
+      };
+    };
   });
 
   document.body.addEventListener('keyup', (e) => {
-    actors.forEach((actor) => {
-      actor.keyboard_event_up(e.key);
-    });
+    if (gameGUI.pause === false) {
+      actors.forEach((actor) => {
+        actor.keyboard_event_up(e.key);
+      });
+    };
   });
 };
+
+

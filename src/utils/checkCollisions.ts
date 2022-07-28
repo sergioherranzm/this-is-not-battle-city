@@ -26,6 +26,7 @@ audioHitEnemy.volume = 1;
 audioHitPlayer.volume = 1;
 audioHitBox.volume = 0.4;
 audioDestroyBox.volume = 0.15;
+audioHitRock.volume = 1;
 
 export const checkMapLimits = (position: Point, size: Size): boolean => {
   return (
@@ -53,30 +54,49 @@ export const checkBulletCollisions = (attackBullet: Bullet, shooter: EnemyTank |
   actors.forEach(defenderActor => {
     if (defenderActor !== attackBullet && defenderActor !== shooter && defenderActor.bulletImpact === true) {
       if (attackBullet.size.width / 2 + defenderActor.size.width / 2 >= Math.abs(attackBullet.position.x - defenderActor.position.x) && attackBullet.size.height / 2 + defenderActor.size.height / 2 >= Math.abs(attackBullet.position.y - defenderActor.position.y)) {
-        //console.log('collision with', defenderActor.IFF)
+
+
+        //Updates
         if (attackBullet.IFF !== defenderActor.IFF && defenderActor.bulletImpactDamage === true) {
-          defenderActor.health -= attackBullet.health
-        }
+          if (defenderActor instanceof PlayerTank) {
+            if (shooter instanceof EnemyTank && defenderActor.respawnTimer.active === false) {
+              defenderActor.health -= attackBullet.health
+              defenderActor.loseLiveTimer.active = true;
+            };
+          } else {
+            defenderActor.health -= attackBullet.health
+          };
+        };
         attackBullet.health = 0
+
+
+        //Sounds
         if (defenderActor instanceof EnemyTank && shooter instanceof PlayerTank) {
-          audioHitEnemy.load()
-          audioHitEnemy.play()
+          audioHitEnemy.load();
+          audioHitEnemy.play();
         } else if (defenderActor instanceof PlayerTank && shooter instanceof EnemyTank) {
-          audioHitPlayer.load()
-          audioHitPlayer.play()
+
+          if (defenderActor.respawnTimer.active === true) {
+            audioHitRock.load();
+            audioHitRock.play();
+          };
+
         } else if (defenderActor instanceof DestructibleBlock && shooter instanceof PlayerTank) {
           if (defenderActor.health === 0) {
-            audioDestroyBox.load()
-            audioDestroyBox.play()
+            audioDestroyBox.load();
+            audioDestroyBox.play();
           } else {
-            audioHitBox.load()
-            audioHitBox.play()
-          }
+            audioHitBox.load();
+            audioHitBox.play();
+          };
+
         } else if ((defenderActor instanceof NotDestructibleBlock || defenderActor instanceof Bullet) && shooter instanceof PlayerTank) {
-          audioHitRock.load()
-          audioHitRock.play()
-        }
-      }
-    }
+          audioHitRock.load();
+          audioHitRock.play();
+        };
+
+
+      };
+    };
   });
 };

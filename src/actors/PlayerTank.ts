@@ -6,10 +6,13 @@ import { actors } from '../script';
 import { Bullet } from './Bullet';
 import sprite_1 from '../assets/actors/Player_Tank_A.png'
 import sprite_2 from '../assets/actors/Player_Tank_B.png'
+import sprite_explosion from '../assets/actors/explosion.png'
 import { Timer } from '../types/Timer';
 const audioURLShot = new URL('../assets/sounds/shot.mp3', import.meta.url)
 const audioURLIdle = new URL('../assets/sounds/motor_idle.mp3', import.meta.url)
 const audioURLAcc = new URL('../assets/sounds/motor_acc.mp3', import.meta.url)
+const audioURLLoseLive = new URL('../assets/sounds/hit_player.mp3', import.meta.url)
+const audioURLRespawn = new URL('../assets/sounds/appear_player.mp3', import.meta.url)
 
 
 export class PlayerTank extends Actor {
@@ -24,6 +27,13 @@ export class PlayerTank extends Actor {
   audioShot: HTMLAudioElement;
   audioIdle: HTMLAudioElement;
   audioAcc: HTMLAudioElement;
+  respawnTimer: Timer;
+  audioRespawn: HTMLAudioElement;
+
+  loseLiveSprite: HTMLImageElement;
+  loseLiveFrame: number;
+  loseLiveTimer: Timer;
+  audioLoseLive: HTMLAudioElement;
 
   tankDefaultMaxSpeed: number;
   tankDefaultAngleSpeed: number;
@@ -40,11 +50,17 @@ export class PlayerTank extends Actor {
     this.keyboardMap = keyboardMap;
     this.newPos = position;
     this.newPosGuess = position;
+    this.respawnTimer = { time: 0, active: true };
 
     this.actorSprite = new Image();
     this.actorSprite.src = sprite_1;
     this.activeSprite = 'sprite_1';
     this.timerTankMove = { active: true, time: 0 }
+
+    this.loseLiveSprite = new Image();
+    this.loseLiveSprite.src = sprite_explosion;
+    this.loseLiveFrame = 0;
+    this.loseLiveTimer = { active: false, time: 0 };
 
     this.audioShot = new Audio(audioURLShot.toString());
     this.audioShot.volume = 1;
@@ -56,6 +72,12 @@ export class PlayerTank extends Actor {
     this.audioAcc = new Audio(audioURLAcc.toString());
     this.audioAcc.loop = true
 
+    this.audioLoseLive = new Audio(audioURLLoseLive.toString());
+    this.audioLoseLive.volume = 0.3;
+
+    this.audioRespawn = new Audio(audioURLRespawn.toString());
+    this.audioRespawn.volume = 0.2;
+
   }
 
   update(delta: number): void {
@@ -63,122 +85,173 @@ export class PlayerTank extends Actor {
     //Update timers
     if (this.timerTankMove.active === true) {
       this.timerTankMove.time += delta;
+    };
+
+    if (this.loseLiveTimer.active === true) {
+      this.loseLiveTimer.time += delta;
     }
+
+    if (this.respawnTimer.active === true) {
+
+      this.respawnTimer.time += delta;
+
+      if (this.respawnTimer.time > 3) {
+        this.respawnTimer.active = false;
+        this.respawnTimer.time = 0;
+      };
+
+    };
+
+    if (this.loseLiveTimer.active === true || this.respawnTimer.active === true) {
+      this.bulletImpactDamage = false;
+    } else {
+      this.bulletImpactDamage = true;
+    };
+
+    if (this.loseLiveTimer.active === true) {
+      this.actorCollisions = false;
+      this.bulletImpact = false;
+    } else {
+      this.actorCollisions = true;
+      this.bulletImpact = true;
+    };
+
 
     //Check life
-    if (this.health <= 0) {
-      const actorToRemove = actors.indexOf(this)
-      actors.splice(actorToRemove, 1)
-      console.log('¡Has muerto!\nPulsa F5 para reiniciar')
-    }
+    if (this.health <= 0) { //Si esta muerto:
+      const actorToRemove = actors.indexOf(this);
+      actors.splice(actorToRemove, 1);
+      console.log('¡Has muerto!\nPulsa F5 para reiniciar');
 
-    if (this.tankDrawAngle !== this.tankAngle) {
-      //Funcion para que el angulo de dibujado cmbie suavemente al nuevo ángulo
-      //this.angle += this.angleSpeed * delta;
-    }
-    if (this.tankDrawAngle === 2 * Math.PI) {
-      this.tankDrawAngle = 0
-    }
+    } else if (this.loseLiveTimer.active == true) {//Ha perdido vida:
 
-    this.tankSpeed = this.tankSpeed * 0.3 + this.tankMaxSpeed;
-    if (this.tankSpeed < 0.1) {
-      this.tankSpeed = 0
-    };
+      if (this.loseLiveTimer.time > 0.2) {
+        this.loseLiveFrame++;
+        this.loseLiveTimer.time = 0;
+      }
 
-    this.newPos = {
-      x:
-        this.position.x + (Math.cos(this.tankAngle) * this.tankSpeed * delta),
-      y:
-        this.position.y + (Math.sin(this.tankAngle) * this.tankSpeed * delta),
-    };
-
-    this.newPosGuess = {
-      x:
-        this.newPos.x + (Math.cos(this.tankAngle) * this.tankSpeed * delta),
-      y:
-        this.newPos.y + (Math.sin(this.tankAngle) * this.tankSpeed * delta),
-    };
-
-    // Check collisions
-    if (checkMapLimits(this.newPos, this.size) && !checkMoveCollisions(this)) {
-      this.position = this.newPos;
-    };
-
-    //Animation
-    if (this.tankSpeed > 0 && this.timerTankMove.time > 0.06) {
-
-      if (this.activeSprite === 'sprite_1') {
-        this.actorSprite.src = sprite_2;
-        this.activeSprite = 'sprite_2';
-      } else if (this.activeSprite === 'sprite_2') {
-        this.actorSprite.src = sprite_1;
-        this.activeSprite = 'sprite_1';
+      if (this.loseLiveFrame === 0) {
+        this.audioLoseLive.load();
+        this.audioLoseLive.play();
+        this.audioAcc.load();
+        this.audioIdle.load();
+        this.audioShot.load();
+      } else if (this.loseLiveFrame === 8) {
+        this.loseLiveTimer.active = false;
+        this.loseLiveTimer.time = 0;
+        this.loseLiveFrame = 0;
+        this.position = { x: 650, y: 850 }; //Posicion del spawn******************/
+        this.tankAngle = -Math.PI / 2
+        this.respawnTimer.active = true;
+        this.respawnTimer.time = 0;
+        this.audioRespawn.load();
+        this.audioRespawn.play();
       };
-      this.timerTankMove.time = 0;
-    };
 
-    if (this.tankSpeed === 0) {
-      this.audioIdle.play();
-      this.audioAcc.load();
-    };
-    if (this.tankMaxSpeed > 0) {
-      this.audioAcc.volume = 0.06;
-      this.audioAcc.play();
-    } else {
-      this.audioAcc.volume = this.audioAcc.volume * 0.9;
-    };
+    } else {//Si esta vivo:
 
+      if (this.tankDrawAngle !== this.tankAngle) {
+        //Funcion para que el angulo de dibujado cmbie suavemente al nuevo ángulo
+        //this.angle += this.angleSpeed * delta;
+      }
+      if (this.tankDrawAngle === 2 * Math.PI) {
+        this.tankDrawAngle = 0
+      }
 
+      this.tankSpeed = this.tankSpeed * 0.3 + this.tankMaxSpeed;
+      if (this.tankSpeed < 0.1) {
+        this.tankSpeed = 0
+      };
+
+      this.newPos = {
+        x:
+          this.position.x + (Math.cos(this.tankAngle) * this.tankSpeed * delta),
+        y:
+          this.position.y + (Math.sin(this.tankAngle) * this.tankSpeed * delta),
+      };
+
+      this.newPosGuess = {
+        x:
+          this.newPos.x + (Math.cos(this.tankAngle) * this.tankSpeed * delta),
+        y:
+          this.newPos.y + (Math.sin(this.tankAngle) * this.tankSpeed * delta),
+      };
+
+      // Check collisions
+      if (checkMapLimits(this.newPos, this.size) && !checkMoveCollisions(this)) {
+        this.position = this.newPos;
+      };
+
+      //Animation
+      if (this.tankSpeed > 0 && this.timerTankMove.time > 0.06) {
+
+        if (this.activeSprite === 'sprite_1') {
+          this.actorSprite.src = sprite_2;
+          this.activeSprite = 'sprite_2';
+        } else if (this.activeSprite === 'sprite_2') {
+          this.actorSprite.src = sprite_1;
+          this.activeSprite = 'sprite_1';
+        };
+        this.timerTankMove.time = 0;
+      };
+
+      if (this.tankSpeed === 0) {
+        this.audioIdle.play();
+        this.audioAcc.pause();
+        this.audioAcc.load();
+      };
+      if (this.tankMaxSpeed > 0) {
+        this.audioAcc.volume = 0.06;
+        this.audioAcc.play();
+      } else {
+        this.audioAcc.volume = this.audioAcc.volume * 0.9;
+      };
+
+    };
   };
 
   draw(ctx: CanvasRenderingContext2D, delta: number): void {
 
-    ctx.translate(this.position.x, this.position.y);
-    ctx.rotate(this.tankAngle + Math.PI / 2);
-    ctx.drawImage(this.actorSprite, - this.size.width / 2, - this.size.height / 2, this.size.width, this.size.height)
+    if (this.loseLiveTimer.active === true) {
+      ctx.translate(this.position.x, this.position.y);
+      ctx.drawImage(this.loseLiveSprite, this.loseLiveFrame * 256, 0, 256, 256, - this.size.width / 2, - this.size.height / 2, this.size.width, this.size.height)
+    } else {
 
-    /*
-    ctx.fillStyle = this.tankColor;
-    ctx.strokeStyle = this.tankColor;
+      ctx.translate(this.position.x, this.position.y);
+      ctx.rotate(this.tankAngle + Math.PI / 2);
+      ctx.drawImage(this.actorSprite, - this.size.width / 2, - this.size.height / 2, this.size.width, this.size.height);
 
-    ctx.beginPath();
-    ctx.moveTo(-this.size.width / 16, -this.size.height / 2);
-    ctx.lineTo(-this.size.width / 16, -this.size.height / 16)
-    ctx.lineTo(-this.size.width / 2, -this.size.height / 16)
-    ctx.lineTo(-this.size.width / 2, this.size.height / 2)
-    ctx.lineTo(this.size.width / 2, this.size.height / 2)
-    ctx.lineTo(this.size.width / 2, -this.size.height / 16)
-    ctx.lineTo(this.size.width / 16, -this.size.height / 16)
-    ctx.lineTo(this.size.width / 16, -this.size.height / 2)
-    ctx.closePath();
-    ctx.stroke();
-    ctx.fill();
-    */
-
+      ctx.fillStyle = "rgba(0, 0, 255, 0.4)";
+      if (this.respawnTimer.active === true && this.respawnTimer.time % 0.2 > 0.1) {
+        ctx.fillRect(-this.size.width / 2, - this.size.height / 2, this.size.width, this.size.height);
+      };
+    };
   };
 
   keyboard_event_down(key: string): void {
-    const mappedKey = this.keyboardMap[key];
-    if (mappedKey === CarKeys.LEFT) {
-      this.tankAngle = Math.PI;
-      this.tankMaxSpeed = this.tankDefaultMaxSpeed
-      this.audioIdle.load();
-    } else if (mappedKey === CarKeys.RIGHT) {
-      this.tankAngle = 0;
-      this.tankMaxSpeed = this.tankDefaultMaxSpeed;
-      this.audioIdle.load();
-    } else if (mappedKey === CarKeys.UP) {
-      this.tankAngle = -Math.PI / 2;
-      this.tankMaxSpeed = this.tankDefaultMaxSpeed;
-      this.audioIdle.load();
-    } else if (mappedKey === CarKeys.DOWN) {
-      this.tankAngle = Math.PI / 2;
-      this.tankMaxSpeed = this.tankDefaultMaxSpeed;
-      this.audioIdle.load();
-    } else if (mappedKey === CarKeys.FIRE) {
-      this.audioShot.load()
-      actors.push(new Bullet({ x: this.position.x + (this.size.width / 2 * Math.cos(this.tankAngle)), y: this.position.y + (this.size.height / 2 * Math.sin(this.tankAngle)) }, 'Friend', 1, this.tankAngle, this))
-      this.audioShot.play()
+    if (this.loseLiveTimer.active === false) {
+      const mappedKey = this.keyboardMap[key];
+      if (mappedKey === CarKeys.LEFT) {
+        this.tankAngle = Math.PI;
+        this.tankMaxSpeed = this.tankDefaultMaxSpeed
+        this.audioIdle.load();
+      } else if (mappedKey === CarKeys.RIGHT) {
+        this.tankAngle = 0;
+        this.tankMaxSpeed = this.tankDefaultMaxSpeed;
+        this.audioIdle.load();
+      } else if (mappedKey === CarKeys.UP) {
+        this.tankAngle = -Math.PI / 2;
+        this.tankMaxSpeed = this.tankDefaultMaxSpeed;
+        this.audioIdle.load();
+      } else if (mappedKey === CarKeys.DOWN) {
+        this.tankAngle = Math.PI / 2;
+        this.tankMaxSpeed = this.tankDefaultMaxSpeed;
+        this.audioIdle.load();
+      } else if (mappedKey === CarKeys.FIRE) {
+        this.audioShot.load()
+        actors.push(new Bullet({ x: this.position.x + (this.size.width / 2 * Math.cos(this.tankAngle)), y: this.position.y + (this.size.height / 2 * Math.sin(this.tankAngle)) }, 'Friend', 1, this.tankAngle, this))
+        this.audioShot.play()
+      };
     };
   };
 
