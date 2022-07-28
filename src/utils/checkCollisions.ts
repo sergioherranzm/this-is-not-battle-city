@@ -63,6 +63,17 @@ export const checkBulletCollisions = (attackBullet: Bullet, shooter: EnemyTank |
               defenderActor.health -= attackBullet.health
               defenderActor.loseLiveTimer.active = true;
             };
+          } else if (defenderActor instanceof EnemyTank && shooter instanceof PlayerTank) {
+
+            defenderActor.getNewRandomDirection()
+
+            defenderActor.health -= attackBullet.health
+
+            if (defenderActor.health === 0) {
+
+            }
+
+
           } else {
             defenderActor.health -= attackBullet.health
           };

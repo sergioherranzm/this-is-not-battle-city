@@ -20,10 +20,12 @@ export class PlayerTank extends Actor {
   tankAngle: number;
   tankSpeed: number;
   tankMaxSpeed: number;
+  pressedKeys: string[];
   keyboardMap: KeyboardMap;
   actorSprite: HTMLImageElement;
   activeSprite: string;
   timerTankMove: Timer;
+  timerShoot: Timer;
   audioShot: HTMLAudioElement;
   audioIdle: HTMLAudioElement;
   audioAcc: HTMLAudioElement;
@@ -45,6 +47,7 @@ export class PlayerTank extends Actor {
     this.tankDefaultMaxSpeed = 300;
     this.tankDrawAngle = angle;
     this.tankAngle = this.tankDrawAngle;
+    this.pressedKeys = [];
     this.tankSpeed = 0;
     this.tankMaxSpeed = 0;
     this.keyboardMap = keyboardMap;
@@ -55,7 +58,8 @@ export class PlayerTank extends Actor {
     this.actorSprite = new Image();
     this.actorSprite.src = sprite_1;
     this.activeSprite = 'sprite_1';
-    this.timerTankMove = { active: true, time: 0 }
+    this.timerTankMove = { active: true, time: 0 };
+    this.timerShoot = { active: true, time: 0 };
 
     this.loseLiveSprite = new Image();
     this.loseLiveSprite.src = sprite_explosion;
@@ -67,10 +71,10 @@ export class PlayerTank extends Actor {
 
     this.audioIdle = new Audio(audioURLIdle.toString());
     this.audioIdle.volume = 0.06;
-    this.audioIdle.loop = true
+    this.audioIdle.loop = true;
 
     this.audioAcc = new Audio(audioURLAcc.toString());
-    this.audioAcc.loop = true
+    this.audioAcc.loop = true;
 
     this.audioLoseLive = new Audio(audioURLLoseLive.toString());
     this.audioLoseLive.volume = 0.3;
@@ -85,6 +89,10 @@ export class PlayerTank extends Actor {
     //Update timers
     if (this.timerTankMove.active === true) {
       this.timerTankMove.time += delta;
+    };
+
+    if (this.timerShoot.active === true) {
+      this.timerShoot.time += delta;
     };
 
     if (this.loseLiveTimer.active === true) {
@@ -121,7 +129,7 @@ export class PlayerTank extends Actor {
     if (this.health <= 0) { //Si esta muerto:
       const actorToRemove = actors.indexOf(this);
       actors.splice(actorToRemove, 1);
-      console.log('¡Has muerto!\nPulsa F5 para reiniciar');
+
 
     } else if (this.loseLiveTimer.active == true) {//Ha perdido vida:
 
@@ -148,7 +156,9 @@ export class PlayerTank extends Actor {
         this.audioRespawn.play();
       };
 
-    } else {//Si esta vivo:
+    } else {//Si esta vivo y no ha perdido vida:
+
+      this.checkPressedKeys()
 
       if (this.tankDrawAngle !== this.tankAngle) {
         //Funcion para que el angulo de dibujado cmbie suavemente al nuevo ángulo
@@ -228,37 +238,105 @@ export class PlayerTank extends Actor {
     };
   };
 
+  checkPressedKeys() {
+    if (this.pressedKeys.length === 0) {
+      this.tankMaxSpeed = 0;
+    } else {
+      this.tankMaxSpeed = this.tankDefaultMaxSpeed
+      if (this.pressedKeys[0] === 'left') {
+        this.tankAngle = Math.PI;
+      } else if (this.pressedKeys[0] === 'right') {
+        this.tankAngle = 0;
+      } else if (this.pressedKeys[0] === 'up') {
+        this.tankAngle = -Math.PI / 2;
+      } else if (this.pressedKeys[0] === 'down') {
+        this.tankAngle = Math.PI / 2;
+      };
+    };
+  };
+
   keyboard_event_down(key: string): void {
     if (this.loseLiveTimer.active === false) {
       const mappedKey = this.keyboardMap[key];
       if (mappedKey === CarKeys.LEFT) {
-        this.tankAngle = Math.PI;
-        this.tankMaxSpeed = this.tankDefaultMaxSpeed
+        if (!this.pressedKeys.some(i => (i === 'left'))) {
+          this.pressedKeys.push('left')
+        };
         this.audioIdle.load();
       } else if (mappedKey === CarKeys.RIGHT) {
-        this.tankAngle = 0;
-        this.tankMaxSpeed = this.tankDefaultMaxSpeed;
+        if (!this.pressedKeys.some(i => (i === 'right'))) {
+          this.pressedKeys.push('right')
+        };
         this.audioIdle.load();
       } else if (mappedKey === CarKeys.UP) {
-        this.tankAngle = -Math.PI / 2;
-        this.tankMaxSpeed = this.tankDefaultMaxSpeed;
+        if (!this.pressedKeys.some(i => (i === 'up'))) {
+          this.pressedKeys.push('up')
+        };
         this.audioIdle.load();
       } else if (mappedKey === CarKeys.DOWN) {
-        this.tankAngle = Math.PI / 2;
-        this.tankMaxSpeed = this.tankDefaultMaxSpeed;
+        if (!this.pressedKeys.some(i => (i === 'down'))) {
+          this.pressedKeys.push('down')
+        };
         this.audioIdle.load();
       } else if (mappedKey === CarKeys.FIRE) {
-        this.audioShot.load()
-        actors.push(new Bullet({ x: this.position.x + (this.size.width / 2 * Math.cos(this.tankAngle)), y: this.position.y + (this.size.height / 2 * Math.sin(this.tankAngle)) }, 'Friend', 1, this.tankAngle, this))
-        this.audioShot.play()
+        if (this.timerShoot.time > 0.25) {
+          this.audioShot.load();
+          actors.push(new Bullet({ x: this.position.x + (this.size.width / 2 * Math.cos(this.tankAngle)), y: this.position.y + (this.size.height / 2 * Math.sin(this.tankAngle)) }, 'Friend', 1, this.tankAngle, this));
+          this.audioShot.play();
+          this.timerShoot.time = 0;
+        };
+
       };
     };
   };
 
   keyboard_event_up(key: string): void {
     const mappedKey = this.keyboardMap[key];
-    if (mappedKey === CarKeys.UP || mappedKey === CarKeys.DOWN || mappedKey === CarKeys.LEFT || mappedKey === CarKeys.RIGHT) {
-      this.tankMaxSpeed = 0;
+    if (mappedKey === CarKeys.LEFT) {
+      this.pressedKeys.splice(this.pressedKeys.indexOf('left'), 1);
+    } else if (mappedKey === CarKeys.RIGHT) {
+      this.pressedKeys.splice(this.pressedKeys.indexOf('right'), 1);
+    } else if (mappedKey === CarKeys.UP) {
+      this.pressedKeys.splice(this.pressedKeys.indexOf('up'), 1);
+    } else if (mappedKey === CarKeys.DOWN) {
+      this.pressedKeys.splice(this.pressedKeys.indexOf('down'), 1);
     };
   };
-}
+
+
+  /*
+    keyboard_event_down(key: string): void {
+      if (this.loseLiveTimer.active === false) {
+        const mappedKey = this.keyboardMap[key];
+        if (mappedKey === CarKeys.LEFT) {
+          this.tankAngle = Math.PI;
+          this.tankMaxSpeed = this.tankDefaultMaxSpeed
+          this.audioIdle.load();
+        } else if (mappedKey === CarKeys.RIGHT) {
+          this.tankAngle = 0;
+          this.tankMaxSpeed = this.tankDefaultMaxSpeed;
+          this.audioIdle.load();
+        } else if (mappedKey === CarKeys.UP) {
+          this.tankAngle = -Math.PI / 2;
+          this.tankMaxSpeed = this.tankDefaultMaxSpeed;
+          this.audioIdle.load();
+        } else if (mappedKey === CarKeys.DOWN) {
+          this.tankAngle = Math.PI / 2;
+          this.tankMaxSpeed = this.tankDefaultMaxSpeed;
+          this.audioIdle.load();
+        } else if (mappedKey === CarKeys.FIRE) {
+          this.audioShot.load()
+          actors.push(new Bullet({ x: this.position.x + (this.size.width / 2 * Math.cos(this.tankAngle)), y: this.position.y + (this.size.height / 2 * Math.sin(this.tankAngle)) }, 'Friend', 1, this.tankAngle, this))
+          this.audioShot.play()
+        };
+      };
+    };
+  
+    keyboard_event_up(key: string): void {
+      const mappedKey = this.keyboardMap[key];
+      if (mappedKey === CarKeys.UP || mappedKey === CarKeys.DOWN || mappedKey === CarKeys.LEFT || mappedKey === CarKeys.RIGHT) {
+        this.tankMaxSpeed = 0;
+      };
+    };
+    */
+};

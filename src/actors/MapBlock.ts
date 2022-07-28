@@ -14,10 +14,7 @@ export class MapBlock extends Actor {
   };
 
   update(delta: number): void {
-    if (this.health <= 0) {
-      const actorToRemove = actors.indexOf(this);
-      actors.splice(actorToRemove, 1);
-    };
+
   };
 
   draw(ctx: CanvasRenderingContext2D, delta: number): void {

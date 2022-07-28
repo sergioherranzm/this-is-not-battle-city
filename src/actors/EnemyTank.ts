@@ -6,6 +6,7 @@ import { Bullet } from './Bullet';
 import lodash from 'lodash'
 import { Timer } from '../types/Timer';
 import sprite_explosion from '../assets/actors/explosion.png'
+import { gameGUI } from '../script'
 const audioURLDeath = new URL('../assets/sounds/enemy_death.mp3', import.meta.url)
 
 export class EnemyTank extends Actor {
@@ -13,10 +14,10 @@ export class EnemyTank extends Actor {
   tankAngle: number;
   tankSpeed: number;
   tankMaxSpeed: number;
-  timerShoot: number;
+  timerShoot: Timer;
   tankshootSpeed: number;
   tankScore: number;
-  timerChangeDirection: number;
+  timerChangeDirection: Timer;
   bulletPower: number;
   actorSprite: HTMLImageElement;
   actorSpriteString_1: string;
@@ -50,8 +51,8 @@ export class EnemyTank extends Actor {
     this.newPos = position;
     this.newPosGuess = position;
 
-    this.timerShoot = 0
-    this.timerChangeDirection = 0
+    this.timerShoot = { active: true, time: 0 };
+    this.timerChangeDirection = { active: true, time: 0 };
 
     this.actorSpriteString_1 = sprite_1;
     this.actorSpriteString_2 = sprite_2;
@@ -78,6 +79,12 @@ export class EnemyTank extends Actor {
     if (this.deathTimer.active === true) {
       this.deathTimer.time += delta;
     }
+    if (this.timerShoot.active === true) {
+      this.timerShoot.time += delta;
+    }
+    if (this.timerChangeDirection.active === true) {
+      this.timerChangeDirection.time += delta;
+    }
 
     //Check life
     if (this.health <= 0) { //Si esta muerto:
@@ -95,12 +102,19 @@ export class EnemyTank extends Actor {
         this.bulletImpact = false;
         this.bulletImpactDamage = false;
       } else if (this.deathFrame === 8) {
+        gameGUI.score += this.tankScore;
         const actorToRemove = actors.indexOf(this)
         actors.splice(actorToRemove, 1)
-        console.log('¡Enemigo eliminado!')
       };
 
     } else { //Si esta vivo:
+
+      //Funcion de cambio de direccion aleatorio en funcion de cierta probabilidad
+      let probabilityChange = lodash.random(0, 99);
+      if (probabilityChange > 96 && this.timerChangeDirection.time > 1) {
+        this.getNewRandomDirection();
+        this.timerChangeDirection.time = 0;
+      }
 
       if (this.tankDrawAngle !== this.tankAngle) {
         //Funcion para que el angulo de dibujado cmbie suavemente al nuevo ángulo*****************
@@ -135,9 +149,8 @@ export class EnemyTank extends Actor {
       }
 
       // Funcion de disparo automático cada x segundos
-      this.timerShoot += delta
-      if (this.timerShoot > this.tankshootSpeed) {
-        this.timerShoot = 0
+      if (this.timerShoot.time > this.tankshootSpeed) {
+        this.timerShoot.time = 0
         actors.push(new Bullet({ x: this.position.x + (this.size.width / 2 * Math.cos(this.tankAngle)), y: this.position.y + (this.size.height / 2 * Math.sin(this.tankAngle)) }, 'Foe', this.bulletPower, this.tankAngle, this))
       };
 
@@ -172,7 +185,7 @@ export class EnemyTank extends Actor {
     const directions: number[] = [0, Math.PI / 2, Math.PI, -Math.PI / 2]
 
     let newDirection = directions[lodash.random(0, 3)]
-    while (newDirection == this.tankAngle) {
+    while (newDirection === this.tankAngle) {
       newDirection = directions[lodash.random(0, 3)]
     }
     this.tankAngle = newDirection

@@ -1,8 +1,6 @@
-import { Console } from 'console';
-import { Actor } from '../actors/Actor';
 import { mapsBlueprints } from './Maps';
 import { actors } from '../script'
-import { DestructibleBlock, NotDestructibleBlock } from '../actors/MapBlockClasses';
+import { DestructibleBlock, NotDestructibleBlock, WaterBlock } from '../actors/MapBlockClasses';
 
 
 
@@ -38,6 +36,9 @@ export const MapBuilder = (level: number) => {
             break;
           case 'X': //not destrutible block
             actors.push(new NotDestructibleBlock({ x: x_pos + w / 2, y: y_pos + h / 2 }))
+            break;
+          case 'S': //water block
+            actors.push(new WaterBlock({ x: x_pos + w / 2, y: y_pos + h / 2 }))
             break;
           default:
             console.log('Character not valid in map template:', char);

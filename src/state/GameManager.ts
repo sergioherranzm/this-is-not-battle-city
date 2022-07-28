@@ -10,7 +10,7 @@ import { Timer } from '../types/Timer';
 import { MAP_P1, MAP_P2 } from '../utils/keyboardMap';
 import backgroundSpriteFile from '../assets/background/Ground_Tile_01_B.png'
 
-interface IGameManager {
+export interface IGameManager {
   livesP1: number;
   livesP2?: number;
   chrono: Timer;
@@ -23,6 +23,8 @@ interface IGameManager {
   aEnemies: IGUIItem[];
   backgroundSprite: HTMLImageElement;
   pause: boolean;
+  winState: boolean;
+  loseState: boolean;
   draw: (ctx: CanvasRenderingContext2D, delta: number) => void;
   update: (delta: number) => void;
   paintBackground: (ctx: CanvasRenderingContext2D) => void;
@@ -41,6 +43,8 @@ export class GameManager implements IGameManager {
   aEnemies: IGUIItem[];
   backgroundSprite: HTMLImageElement;
   pause: boolean;
+  winState: boolean;
+  loseState: boolean;
 
   constructor() {
 
@@ -60,6 +64,8 @@ export class GameManager implements IGameManager {
     this.backgroundSprite.src = backgroundSpriteFile;
 
     this.pause = false;
+    this.winState = false;
+    this.loseState = false;
   }
 
   update(delta: number): void {
@@ -77,6 +83,10 @@ export class GameManager implements IGameManager {
       }*/
     };
 
+    if (this.livesP1 === 0) {
+      this.loseState = true;
+      this.chrono.active = false;
+    };
 
 
     if (this.livesP1 < this.aHearthsP1.length) {
@@ -88,9 +98,9 @@ export class GameManager implements IGameManager {
         this.aHearthsP1.push(new GUIHearth({ x: 0, y: 0 }))
       }
       this.aHearthsP1.forEach((h, i) => {
+        console.log('updating position')
         h.position = { x: 20 + (60 * i), y: 80 }
       })
-        ;
     }
 
     //Enemies
@@ -110,60 +120,94 @@ export class GameManager implements IGameManager {
         ;
     };
 
-    //if (!actors.some(e => (e instanceof PlayerTank))) {
-    // actors.push(new PlayerTank({ x: 550, y: 650 }, 3, -Math.PI / 2, MAP_P1));
-    //};
+    if (actorsOnlyEnemies.length === 0) {
+      this.winState = true;
+      this.chrono.active = false;
+      actors.length = 0;
+    };
 
   };
 
   draw(ctx: CanvasRenderingContext2D, delta: number): void {
 
+    if (this.loseState === true) {
+      ctx.fillStyle = 'black';
+      ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      ctx.fillStyle = 'white';
+      ctx.direction = 'ltr';
+      ctx.font = '600 120px Verdana';
+      ctx.fillText(`YOU LOSE!`, 300, 450);
+      ctx.font = 'bold 90px Verdana';
+      ctx.fillText(`SCORE: ${this.score}`, 370, 750);
+      ctx.font = '50px Verdana';
+      ctx.fillText(`Press ESC to continue...`, 350, 1400);
 
-    ctx.fillStyle = 'white';
-    ctx.direction = 'ltr';
+    } else if (this.winState === true) {
+      this.aHearthsP1.forEach((h, i) => {
+        h.position = { x: 630 + (60 * i), y: 850 }
+      });
+      ctx.fillStyle = 'black';
+      ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      ctx.fillStyle = 'white';
+      ctx.direction = 'ltr';
+      ctx.font = '600 120px Verdana';
+      ctx.fillText(`YOU WIN!`, 310, 350);
+      ctx.font = 'bold 80px Verdana';
+      ctx.fillText(`SCORE`, 480, 600);
+      ctx.font = 'bold 60px Verdana';
+      ctx.fillText(`TANK: ${this.score}`, 400, 710);
+      ctx.fillText(`TIME: ${this.chrono.time.toFixed(0)}`, 412, 810);
+      ctx.fillText(`LIFE:`, 432, 910);
+      ctx.font = 'bold 90px Verdana';
+      ctx.fillText(`TOTAL SCORE: ${((this.livesP1 * 100) + this.score + (120 - this.chrono.time)).toFixed(0)}`, 180, 1160);
+      ctx.font = '50px Verdana';
+      ctx.fillText(`Press ESC to continue...`, 350, 1400);
 
-    //FPSviewer
-    const fps = (1 / delta).toFixed(0);
-    ctx.font = '26px Verdana';
-    ctx.fillText(`${fps} FPS`, 600, 30);
+    } else {
+      ctx.fillStyle = 'white';
+      ctx.direction = 'ltr';
 
-    //Labels
-    ctx.fillStyle = 'white';
-    ctx.font = '60px Verdana';
+      //FPSviewer
+      const fps = (1 / delta).toFixed(0);
+      ctx.font = '26px Verdana';
+      ctx.fillText(`${fps} FPS`, 600, 30);
 
-    //Level
-    ctx.fillText(`LEVEL`, 560, 100);
-    ctx.fillText(`${this.level} `, 630, 170);
+      //Labels
+      ctx.fillStyle = 'white';
+      ctx.font = 'bold 60px Verdana';
 
-    //Chrono
-    ctx.fillText(`TIME: ${this.chrono.time.toFixed(0)}`, 10, 60);
+      //Level
+      ctx.fillText(`LEVEL`, 550, 100);
+      ctx.fillText(`${this.level} `, 630, 170);
 
-    //Score
-    ctx.direction = 'rtl';
-    ctx.fillText(`SCORE: ${this.score}`, 1280, 60);
-    ctx.direction = 'ltr';
+      //Chrono
+      ctx.fillText(`TIME: ${this.chrono.time.toFixed(0)}`, 10, 60);
+
+      //Score
+      ctx.direction = 'rtl';
+      ctx.fillText(`SCORE: ${this.score}`, 1280, 60);
+      ctx.direction = 'ltr';
+
+      //Enemies
+      this.aEnemies.forEach((h) => {
+        h.update(delta)
+        h.draw(ctx, delta)
+      })
+
+      //PAUSE
+      if (this.pause === true) {
+        ctx.fillStyle = 'white';
+        ctx.direction = 'ltr';
+        ctx.font = '600 200px Verdana';
+        ctx.fillText(`PAUSE`, 300, 850);
+      };
+    };
 
     //Lives
     this.aHearthsP1.forEach((h) => {
       h.update(delta)
       h.draw(ctx, delta)
     })
-
-    //Enemies
-    this.aEnemies.forEach((h) => {
-      h.update(delta)
-      h.draw(ctx, delta)
-    })
-
-
-    //PAUSE
-    if (this.pause === true) {
-      ctx.fillStyle = 'white';
-      ctx.direction = 'ltr';
-      ctx.font = '200px Verdana';
-      ctx.fillText(`PAUSE`, 300, 850);
-    }
-
   };
 
   paintBackground(ctx: CanvasRenderingContext2D): void {
@@ -181,11 +225,10 @@ export class GameManager implements IGameManager {
 
 };
 
-
-
 /*
 export let GameInstance: GameManager;
 
 export const createGameInstance = () => {
   GameInstance = new GameManager();
-};*/
+};
+*/

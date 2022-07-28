@@ -1,8 +1,6 @@
 import { IActor } from './actors/Actor';
 import { PlayerTank } from './actors/PlayerTank';
-import { Bullet } from './actors/Bullet';
-//import { FPSViewer } from './state/FPSViewer';
-import { GameManager } from './state/GameManager';
+import { GameManager, IGameManager } from './state/GameManager';
 import { MAP_P1, MAP_P2 } from './utils/keyboardMap';
 import { EnemyTankStandard, EnemyTankRapid, EnemyTankHeavy, EnemyTankStrong } from './actors/EnemyTankClasses';
 
@@ -15,7 +13,9 @@ const audioPlay = new Audio(audioURL.toString());
 audioPause.volume = 1;
 audioPlay.volume = 1;
 
-export let actors: IActor[] = []
+export let actors: IActor[] = [];
+
+export let gameGUI: IGameManager;
 
 window.onload = () => {
   const canvas = document.getElementById('canvas') as HTMLCanvasElement;
@@ -25,12 +25,12 @@ window.onload = () => {
   actors = [
     new PlayerTank({ x: 650, y: 850 }, 3, -Math.PI / 2, MAP_P1),
     new EnemyTankStandard({ x: 200, y: 250 }, Math.PI / 2),
-    new EnemyTankRapid({ x: 300, y: 300 }, -Math.PI / 2),
-    new EnemyTankStrong({ x: 800, y: 300 }, -Math.PI / 2),
-    new EnemyTankHeavy({ x: 900, y: 300 }, -Math.PI / 2),
+    //new EnemyTankRapid({ x: 300, y: 300 }, -Math.PI / 2),
+    //new EnemyTankStrong({ x: 800, y: 300 }, -Math.PI / 2),
+    //new EnemyTankHeavy({ x: 900, y: 300 }, -Math.PI / 2),
   ];
 
-  let gameGUI = new GameManager();
+  gameGUI = new GameManager();
 
   let lastFrame = 0;
   //Bucle de renderizado
@@ -40,21 +40,25 @@ window.onload = () => {
 
     gameGUI.update(delta)
 
-    if (gameGUI.pause === false) {
+    if (gameGUI.loseState === false && gameGUI.winState === false) {
+
+      if (gameGUI.pause === false) {
+        actors.forEach((actor) => {
+          actor.update(delta);
+        });
+      };
+
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+      gameGUI.paintBackground(ctx)
+
       actors.forEach((actor) => {
-        actor.update(delta);
+        ctx.save();
+        actor.draw(ctx, delta);
+        ctx.restore();
       });
+
     };
-
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
-    gameGUI.paintBackground(ctx)
-
-    actors.forEach((actor) => {
-      ctx.save();
-      actor.draw(ctx, delta);
-      ctx.restore();
-    });
 
     gameGUI.draw(ctx, delta)
 
@@ -85,6 +89,10 @@ window.onload = () => {
         audioPlay.load()
         audioPlay.play()
       }
+    } else if (e.key === 'Escape') {
+      if (gameGUI.winState === false && gameGUI.loseState === false) {
+        gameGUI.loseState = true;
+      };
     } else {
       if (gameGUI.pause === false) {
         actors.forEach((actor) => {
