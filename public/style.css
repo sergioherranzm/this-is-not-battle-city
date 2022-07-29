@@ -13,11 +13,30 @@ body {
   height: 500px;
   border: 1px solid black;
   /* box-sizing: border-box; */
+  animation-name: appearance;
+  animation-duration: 1s;
 }
 
-.container {
+#container {
+  width: 100vw;
+  height: 100vh;
   display: flex;
   flex-direction: row;
   justify-content: center;
+  align-items: center;
   gap: 50px;
+}
+
+.hidden {
+  display: none;
+}
+
+@keyframes appearance {
+  from {
+    height: 0;
+  }
+
+  to {
+    height: 500px;
+  }
 }

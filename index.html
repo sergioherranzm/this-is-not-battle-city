@@ -7,27 +7,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Document</title>
   <link rel="stylesheet" href="/style.css" />
-  <script type="module" src="/src/script.ts"></script>
+
 </head>
 
 <body>
-  <div class="container">
-    <div class="lateral-izq">
+  <div id="container">
+    <div id="controls-container" class="hidden">
       <h1>Controles</h1>
       <p>Flechas = movimiento</p>
       <p>Control = disparo</p>
       <p>P = PAUSE / UNPAUSE</p>
-    </div>
-    <canvas id="canvas" width="1300" height="1500"></canvas>
-    <div class="lateral-der">
       <h1>Enemigos</h1>
       <p>normal</p>
       <p>Rosa = veloz (+ vel mov)</p>
       <p>Verde = disparo potente (+ vida, + disparo, - vel mov)</p>
       <p>Negro = duro (++ vida, -- vel mov)</p>
-      <p></p>
+      <button id="back">Back to menu</button>
+    </div>
+    <canvas id="canvas" width="1300" height="1500" class="hidden"></canvas>
+    <div id="menu-container" class="">
+      <button id="level1">Play Level 1</button>
+      <button id="level2">Play Level 2</button>
+      <button id="levelRandom">Play Random Level</button>
+      <button id="controls">Instructions</button>
     </div>
   </div>
+  <script type="module" src="/src/script.ts"></script>
 </body>
 
 </html>

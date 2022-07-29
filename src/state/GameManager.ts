@@ -1,4 +1,3 @@
-import { Point } from '../types/Point';
 import { IGUIItem } from './GUIItem';
 import { GUIHearth } from './GUIHearth';
 import { GUIEnemy } from './GUIEnemy';
@@ -46,11 +45,11 @@ export class GameManager implements IGameManager {
   winState: boolean;
   loseState: boolean;
 
-  constructor() {
+  constructor(level: string) {
 
     this.livesP1 = 0;
     this.chrono = { time: 0, active: true }
-    this.level = '1';
+    this.level = level;
     this.enemies = 0;
     this.score = 0;
     this.FPS = 0;
@@ -66,6 +65,8 @@ export class GameManager implements IGameManager {
     this.pause = false;
     this.winState = false;
     this.loseState = false;
+
+    actors.push(new PlayerTank({ x: 650, y: 850 }, 3, -Math.PI / 2, MAP_P1))
   }
 
   update(delta: number): void {
@@ -78,15 +79,17 @@ export class GameManager implements IGameManager {
     for (let i = 0; i <= actorsOnlyPlayers.length - 1; i++) {
       if (actorsOnlyPlayers[i].keyboardMap === MAP_P1) {
         this.livesP1 = actorsOnlyPlayers[i].health
+        if (actorsOnlyPlayers[i].health <= 0) {
+          this.loseState = true;
+          this.chrono.active = false;
+        };
       } /*else if (actorsOnlyPlayers[i].keyboardMap === MAP_P2) {
         this.livesP2 = actorsOnlyPlayers[i].health
       }*/
+
     };
 
-    if (this.livesP1 === 0) {
-      this.loseState = true;
-      this.chrono.active = false;
-    };
+
 
 
     if (this.livesP1 < this.aHearthsP1.length) {
@@ -126,6 +129,27 @@ export class GameManager implements IGameManager {
       actors.length = 0;
     };
 
+    if (this.loseState === true) {
+
+      actors.filter((act): act is PlayerTank => (act instanceof PlayerTank)).forEach((t) => {
+        t.audioIdle.load();
+        t.audioAcc.load();
+        t.audioShot.load();
+      });
+
+      //audioLose.play();
+
+    } else if (this.winState === true) {
+
+      actors.filter((act): act is PlayerTank => (act instanceof PlayerTank)).forEach((t) => {
+        t.audioIdle.load();
+        t.audioAcc.load();
+        t.audioShot.load();
+      });
+
+      //audioWin.play();
+    };
+
   };
 
   draw(ctx: CanvasRenderingContext2D, delta: number): void {
@@ -144,7 +168,7 @@ export class GameManager implements IGameManager {
 
     } else if (this.winState === true) {
       this.aHearthsP1.forEach((h, i) => {
-        h.position = { x: 630 + (60 * i), y: 850 }
+        h.position = { x: 630 + (60 * i), y: 845 }
       });
       ctx.fillStyle = 'black';
       ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -157,7 +181,7 @@ export class GameManager implements IGameManager {
       ctx.font = 'bold 60px Verdana';
       ctx.fillText(`TANK: ${this.score}`, 400, 710);
       ctx.fillText(`TIME: ${this.chrono.time.toFixed(0)}`, 412, 810);
-      ctx.fillText(`LIFE:`, 432, 910);
+      ctx.fillText(`LIFE:`, 432, 920);
       ctx.font = 'bold 90px Verdana';
       ctx.fillText(`TOTAL SCORE: ${((this.livesP1 * 100) + this.score + (120 - this.chrono.time)).toFixed(0)}`, 180, 1160);
       ctx.font = '50px Verdana';
@@ -178,7 +202,12 @@ export class GameManager implements IGameManager {
 
       //Level
       ctx.fillText(`LEVEL`, 550, 100);
-      ctx.fillText(`${this.level} `, 630, 170);
+
+      if (+this.level >= 0) {
+        ctx.fillText(`${this.level}`, 630, 170);
+      } else {
+        ctx.fillText(`RANDOM`, 510, 170);
+      }
 
       //Chrono
       ctx.fillText(`TIME: ${this.chrono.time.toFixed(0)}`, 10, 60);

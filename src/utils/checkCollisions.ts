@@ -7,19 +7,19 @@ import { EnemyTank } from '../actors/EnemyTank';
 import { PlayerTank } from '../actors/PlayerTank';
 import { DestructibleBlock, NotDestructibleBlock } from '../actors/MapBlockClasses';
 
-let audioURL = new URL('../assets/sounds/hit_enemy.mp3', import.meta.url)
+let audioURL = new URL('../assets/sounds/hit_enemy.mp3', import.meta.url);
 const audioHitEnemy = new Audio(audioURL.toString());
 
-audioURL = new URL('../assets/sounds/hit_player.mp3', import.meta.url)
+audioURL = new URL('../assets/sounds/hit_player.mp3', import.meta.url);
 const audioHitPlayer = new Audio(audioURL.toString());
 
-audioURL = new URL('../assets/sounds/hit_box.mp3', import.meta.url)
+audioURL = new URL('../assets/sounds/hit_box.mp3', import.meta.url);
 const audioHitBox = new Audio(audioURL.toString());
 
-audioURL = new URL('../assets/sounds/destroy_box.mp3', import.meta.url)
+audioURL = new URL('../assets/sounds/destroy_box.mp3', import.meta.url);
 const audioDestroyBox = new Audio(audioURL.toString());
 
-audioURL = new URL('../assets/sounds/hit_rock.mp3', import.meta.url)
+audioURL = new URL('../assets/sounds/hit_rock.mp3', import.meta.url);
 const audioHitRock = new Audio(audioURL.toString());
 
 audioHitEnemy.volume = 1;
@@ -36,18 +36,17 @@ export const checkMapLimits = (position: Point, size: Size): boolean => {
 
 export const checkMoveCollisions = (mainActor: Actor): boolean => {
   //funcion para detertar colisiones entre actores
-  const actorsCollisions = actors.filter(act => (act.actorCollisions === true))
+  const actorsCollisions = actors.filter(act => (act.actorCollisions === true));
   for (let i = 0; i <= actorsCollisions.length - 1; i++) {
-    let otherActor = actorsCollisions[i]
+    let otherActor = actorsCollisions[i];
     if (otherActor !== mainActor) {
       if (mainActor.size.width / 2 + otherActor.size.width / 2 >= Math.abs(mainActor.newPos.x - otherActor.newPos.x) && mainActor.size.height / 2 + otherActor.size.height / 2 >= Math.abs(mainActor.newPos.y - otherActor.newPos.y)) {
         //if (mainActor.size.width / 2 + otherActor.size.width / 2 >= Math.abs(mainActor.newPosGuess.x - otherActor.newPosGuess.x) && mainActor.size.height / 2 + otherActor.size.height / 2 >= Math.abs(mainActor.newPosGuess.y - otherActor.newPosGuess.y)) {
-        return true
-      }
-    }
-
+        return true;
+      };
+    };
   };
-  return false
+  return false;
 };
 
 export const checkBulletCollisions = (attackBullet: Bullet, shooter: EnemyTank | PlayerTank): void => {
@@ -60,25 +59,20 @@ export const checkBulletCollisions = (attackBullet: Bullet, shooter: EnemyTank |
         if (attackBullet.IFF !== defenderActor.IFF && defenderActor.bulletImpactDamage === true) {
           if (defenderActor instanceof PlayerTank) {
             if (shooter instanceof EnemyTank && defenderActor.respawnTimer.active === false) {
-              defenderActor.health -= attackBullet.health
+              defenderActor.health -= attackBullet.health;
               defenderActor.loseLiveTimer.active = true;
             };
           } else if (defenderActor instanceof EnemyTank && shooter instanceof PlayerTank) {
 
-            defenderActor.getNewRandomDirection()
+            defenderActor.getNewRandomDirection();
 
-            defenderActor.health -= attackBullet.health
-
-            if (defenderActor.health === 0) {
-
-            }
-
+            defenderActor.health -= attackBullet.health;
 
           } else {
-            defenderActor.health -= attackBullet.health
+            defenderActor.health -= attackBullet.health;
           };
         };
-        attackBullet.health = 0
+        attackBullet.health = 0;
 
 
         //Sounds
@@ -105,7 +99,6 @@ export const checkBulletCollisions = (attackBullet: Bullet, shooter: EnemyTank |
           audioHitRock.load();
           audioHitRock.play();
         };
-
 
       };
     };

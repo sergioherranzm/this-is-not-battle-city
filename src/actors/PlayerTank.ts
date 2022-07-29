@@ -127,6 +127,7 @@ export class PlayerTank extends Actor {
 
     //Check life
     if (this.health <= 0) { //Si esta muerto:
+
       const actorToRemove = actors.indexOf(this);
       actors.splice(actorToRemove, 1);
 

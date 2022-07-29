@@ -1,4 +1,5 @@
-import { mapsBlueprints } from './Maps';
+import { ILevel } from "../types/Level";
+import { allLevels } from './Levels';
 import { actors } from '../script'
 import { DestructibleBlock, NotDestructibleBlock, WaterBlock } from '../actors/MapBlockClasses';
 
@@ -6,47 +7,63 @@ import { DestructibleBlock, NotDestructibleBlock, WaterBlock } from '../actors/M
 
 export const MapBuilder = (level: number) => {
 
+  let chosenLevel: ILevel | undefined
+
   if (level < 0) {
     //Level random
+    chosenLevel = allLevels.find(e => e.id === `LevelRandom`);
     //call RandomMapGemerator();
   } else {
-    let map = mapsBlueprints[level].split('\n').map((row) => row.trim().split(''));
+    chosenLevel = allLevels.find(e => e.id === `Level${level}`);
+  }
 
-    const w = 100; //ctx.canvas.width / 13;
-    const h = 100; //(ctx.canvas.height - 200) / 13;
+  //AÑADIR MAPA
+  if (!chosenLevel) {
+    chosenLevel = allLevels[0];
+  }
 
-    let x_pos = 0;
-    let y_pos = 200;
+  let map = chosenLevel.map.split('\n').map((row) => row.trim().split(''));
 
-    map.forEach((row, y) => {
-      x_pos = 0;
-      row.forEach((char, x) => {
-        switch (char) {
-          case '.': // whitespace
+  const w = 100; //ctx.canvas.width / 13;
+  const h = 100; //(ctx.canvas.height - 200) / 13;
 
-            break;
-          case '%': //player spawnpoint
+  let x_pos = 0;
+  let y_pos = 200;
 
-            break;
-          case '*': //enemy spawnpoint
+  map.forEach((row, y) => {
+    x_pos = 0;
+    row.forEach((char, x) => {
+      switch (char) {
+        case '.': // whitespace
 
-            break;
-          case 'O': //destrutible block
-            actors.push(new DestructibleBlock({ x: x_pos + w / 2, y: y_pos + h / 2 }))
-            break;
-          case 'X': //not destrutible block
-            actors.push(new NotDestructibleBlock({ x: x_pos + w / 2, y: y_pos + h / 2 }))
-            break;
-          case 'S': //water block
-            actors.push(new WaterBlock({ x: x_pos + w / 2, y: y_pos + h / 2 }))
-            break;
-          default:
-            console.log('Character not valid in map template:', char);
-            break;
-        };
-        x_pos += w;
-      });
-      y_pos += h;
+          break;
+        case '%': //player spawnpoint
+
+          break;
+        case '*': //enemy spawnpoint
+
+          break;
+        case 'O': //destrutible block
+          actors.push(new DestructibleBlock({ x: x_pos + w / 2, y: y_pos + h / 2 }))
+          break;
+        case 'X': //not destrutible block
+          actors.push(new NotDestructibleBlock({ x: x_pos + w / 2, y: y_pos + h / 2 }))
+          break;
+        case 'S': //water block
+          actors.push(new WaterBlock({ x: x_pos + w / 2, y: y_pos + h / 2 }))
+          break;
+        default:
+          console.log('Character not valid in map template:', char);
+          break;
+      };
+      x_pos += w;
     });
-  };
+    y_pos += h;
+  });
+
+  //AÑADIR ENEMIGOS
+  chosenLevel.enemies.forEach(e => {
+    actors.push(e);
+  })
+
 };
