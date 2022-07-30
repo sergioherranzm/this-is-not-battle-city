@@ -142,9 +142,9 @@ export class PlayerTank extends Actor {
       if (this.loseLiveFrame === 0) {
         this.audioLoseLive.load();
         this.audioLoseLive.play();
-        this.audioAcc.load();
-        this.audioIdle.load();
-        this.audioShot.load();
+        //this.audioAcc.load();
+        //this.audioIdle.load();
+        //this.audioShot.load();
       } else if (this.loseLiveFrame === 8) {
         this.loseLiveTimer.active = false;
         this.loseLiveTimer.time = 0;
@@ -223,7 +223,7 @@ export class PlayerTank extends Actor {
 
   draw(ctx: CanvasRenderingContext2D, delta: number): void {
 
-    if (this.loseLiveTimer.active === true) {
+    if (this.loseLiveTimer.active === true) { //Animacion de explosion
       ctx.translate(this.position.x, this.position.y);
       ctx.drawImage(this.loseLiveSprite, this.loseLiveFrame * 256, 0, 256, 256, - this.size.width / 2, - this.size.height / 2, this.size.width, this.size.height)
     } else {
@@ -233,7 +233,7 @@ export class PlayerTank extends Actor {
       ctx.drawImage(this.actorSprite, - this.size.width / 2, - this.size.height / 2, this.size.width, this.size.height);
 
       ctx.fillStyle = "rgba(0, 0, 255, 0.4)";
-      if (this.respawnTimer.active === true && this.respawnTimer.time % 0.2 > 0.1) {
+      if (this.respawnTimer.active === true && this.respawnTimer.time % 0.2 > 0.1) { //Animacion de inmunidad
         ctx.fillRect(-this.size.width / 2, - this.size.height / 2, this.size.width, this.size.height);
       };
     };

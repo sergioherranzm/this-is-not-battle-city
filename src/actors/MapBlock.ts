@@ -1,6 +1,5 @@
 import { Actor } from './Actor';
 import { Point } from '../types/Point';
-import { actors } from '../script';
 
 
 export class MapBlock extends Actor {
@@ -20,14 +19,8 @@ export class MapBlock extends Actor {
   draw(ctx: CanvasRenderingContext2D, delta: number): void {
 
     ctx.translate(this.position.x, this.position.y);
-    ctx.drawImage(this.actorSprite, - this.size.width / 2, - this.size.height / 2, this.size.width, this.size.height)
+    ctx.drawImage(this.actorSprite, - this.size.width / 2, - this.size.height / 2, this.size.width, this.size.height);
 
-    /*
-    ctx.fillStyle = this.color;
-    ctx.strokeStyle = this.color;
-
-    ctx.fillRect(this.position.x - this.size.width / 2, this.position.y - this.size.height / 2, this.size.width, this.size.height);
-    */
   };
 
 };

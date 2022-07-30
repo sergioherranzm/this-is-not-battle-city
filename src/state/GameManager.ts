@@ -8,6 +8,8 @@ import { EnemyTank } from '../actors/EnemyTank';
 import { Timer } from '../types/Timer';
 import { MAP_P1, MAP_P2 } from '../utils/keyboardMap';
 import backgroundSpriteFile from '../assets/background/Ground_Tile_01_B.png'
+const audioURLWin = new URL('../assets/sounds/win.mp3', import.meta.url)
+const audioURLLose = new URL('../assets/sounds/lose.mp3', import.meta.url)
 
 export interface IGameManager {
   livesP1: number;
@@ -24,6 +26,11 @@ export interface IGameManager {
   pause: boolean;
   winState: boolean;
   loseState: boolean;
+  //escapeState: boolean;
+  audioWin: HTMLAudioElement;
+  audioWinPlayed: boolean;
+  audioLose: HTMLAudioElement;
+  audioLosePlayed: boolean;
   draw: (ctx: CanvasRenderingContext2D, delta: number) => void;
   update: (delta: number) => void;
   paintBackground: (ctx: CanvasRenderingContext2D) => void;
@@ -44,11 +51,16 @@ export class GameManager implements IGameManager {
   pause: boolean;
   winState: boolean;
   loseState: boolean;
+  //escapeState: boolean;
+  audioWin: HTMLAudioElement;
+  audioWinPlayed: boolean;
+  audioLose: HTMLAudioElement;
+  audioLosePlayed: boolean;
 
   constructor(level: string) {
 
     this.livesP1 = 0;
-    this.chrono = { time: 0, active: true }
+    this.chrono = { time: 0, active: false }
     this.level = level;
     this.enemies = 0;
     this.score = 0;
@@ -65,6 +77,14 @@ export class GameManager implements IGameManager {
     this.pause = false;
     this.winState = false;
     this.loseState = false;
+    //this.escapeState = false;
+
+    this.audioWin = new Audio(audioURLWin.toString());
+    this.audioWin.volume = 1;
+    this.audioWinPlayed = false;
+    this.audioLose = new Audio(audioURLLose.toString());
+    this.audioLose.volume = 1;
+    this.audioLosePlayed = false;
 
     actors.push(new PlayerTank({ x: 650, y: 850 }, 3, -Math.PI / 2, MAP_P1))
   }
@@ -89,9 +109,6 @@ export class GameManager implements IGameManager {
 
     };
 
-
-
-
     if (this.livesP1 < this.aHearthsP1.length) {
       for (let i = this.aHearthsP1.length; i > this.livesP1; i--) {
         this.aHearthsP1.pop()
@@ -101,7 +118,6 @@ export class GameManager implements IGameManager {
         this.aHearthsP1.push(new GUIHearth({ x: 0, y: 0 }))
       }
       this.aHearthsP1.forEach((h, i) => {
-        console.log('updating position')
         h.position = { x: 20 + (60 * i), y: 80 }
       })
     }
@@ -126,28 +142,23 @@ export class GameManager implements IGameManager {
     if (actorsOnlyEnemies.length === 0) {
       this.winState = true;
       this.chrono.active = false;
-      actors.length = 0;
+      //actors.length = 0;
     };
 
-    if (this.loseState === true) {
-
+    if (this.loseState === true || this.winState === true) {
       actors.filter((act): act is PlayerTank => (act instanceof PlayerTank)).forEach((t) => {
         t.audioIdle.load();
         t.audioAcc.load();
         t.audioShot.load();
       });
+    }
 
-      //audioLose.play();
-
-    } else if (this.winState === true) {
-
-      actors.filter((act): act is PlayerTank => (act instanceof PlayerTank)).forEach((t) => {
-        t.audioIdle.load();
-        t.audioAcc.load();
-        t.audioShot.load();
-      });
-
-      //audioWin.play();
+    if (this.loseState === true && this.audioLosePlayed === false) {
+      this.audioLose.play();
+      this.audioLosePlayed = true;
+    } else if (this.winState === true && this.audioWinPlayed === false) {
+      this.audioWin.play();
+      this.audioWinPlayed = true;
     };
 
   };
@@ -186,6 +197,12 @@ export class GameManager implements IGameManager {
       ctx.fillText(`TOTAL SCORE: ${((this.livesP1 * 100) + this.score + (120 - this.chrono.time)).toFixed(0)}`, 180, 1160);
       ctx.font = '50px Verdana';
       ctx.fillText(`Press ESC to continue...`, 350, 1400);
+
+      //Lives
+      this.aHearthsP1.forEach((h) => {
+        h.update(delta)
+        h.draw(ctx, delta)
+      })
 
     } else {
       ctx.fillStyle = 'white';
@@ -230,13 +247,13 @@ export class GameManager implements IGameManager {
         ctx.font = '600 200px Verdana';
         ctx.fillText(`PAUSE`, 300, 850);
       };
-    };
 
-    //Lives
-    this.aHearthsP1.forEach((h) => {
-      h.update(delta)
-      h.draw(ctx, delta)
-    })
+      //Lives
+      this.aHearthsP1.forEach((h) => {
+        h.update(delta)
+        h.draw(ctx, delta)
+      })
+    };
   };
 
   paintBackground(ctx: CanvasRenderingContext2D): void {

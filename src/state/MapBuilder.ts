@@ -2,12 +2,13 @@ import { ILevel } from "../types/Level";
 import { allLevels } from './Levels';
 import { actors } from '../script'
 import { DestructibleBlock, NotDestructibleBlock, WaterBlock } from '../actors/MapBlockClasses';
+import { EnemyTankHeavy, EnemyTankRapid, EnemyTankStandard, EnemyTankStrong } from "../actors/EnemyTankClasses";
 
 
 
 export const MapBuilder = (level: number) => {
 
-  let chosenLevel: ILevel | undefined
+  let chosenLevel: ILevel | undefined;
 
   if (level < 0) {
     //Level random
@@ -63,7 +64,24 @@ export const MapBuilder = (level: number) => {
 
   //AÑADIR ENEMIGOS
   chosenLevel.enemies.forEach(e => {
-    actors.push(e);
+
+    switch (e.type) {
+      case 'EnemyTankStandard':
+        actors.push(new EnemyTankStandard(e.position, e.angle));
+        break;
+
+      case 'EnemyTankRapid':
+        actors.push(new EnemyTankRapid(e.position, e.angle));
+        break;
+
+      case 'EnemyTankStrong':
+        actors.push(new EnemyTankStrong(e.position, e.angle));
+        break;
+
+      case 'EnemyTankHeavy':
+        actors.push(new EnemyTankHeavy(e.position, e.angle));
+        break;
+    }
   })
 
 };

@@ -9,8 +9,9 @@ import { EnemyTankStandard, EnemyTankRapid, EnemyTankHeavy, EnemyTankStrong } fr
 
 */
 
+
 const Level0: ILevel = {
-    id: 'Level2',
+    id: 'Level0',
 
     map: `.............
     .............
@@ -27,11 +28,11 @@ const Level0: ILevel = {
     .............`,
 
     enemies: [
-        new EnemyTankRapid({ x: 200, y: 250 }, Math.PI / 2),
-        new EnemyTankRapid({ x: 500, y: 250 }, Math.PI / 2),
-        new EnemyTankRapid({ x: 800, y: 250 }, Math.PI / 2)
+        { type: 'EnemyTankRapid', position: { x: 200, y: 250 }, angle: Math.PI / 2 },
+        { type: 'EnemyTankRapid', position: { x: 500, y: 250 }, angle: Math.PI / 2 },
+        { type: 'EnemyTankRapid', position: { x: 800, y: 250 }, angle: Math.PI / 2 }
     ]
-}
+};
 
 const Level1: ILevel = {
     id: 'Level1',
@@ -51,11 +52,11 @@ const Level1: ILevel = {
     X...........X`,
 
     enemies: [
-        new EnemyTankStandard({ x: 200, y: 250 }, Math.PI / 2),
-        new EnemyTankStandard({ x: 500, y: 250 }, Math.PI / 2),
-        new EnemyTankStandard({ x: 800, y: 250 }, Math.PI / 2)
+        { type: 'EnemyTankStandard', position: { x: 200, y: 250 }, angle: Math.PI / 2 },
+        { type: 'EnemyTankStandard', position: { x: 500, y: 250 }, angle: Math.PI / 2 },
+        { type: 'EnemyTankStandard', position: { x: 800, y: 250 }, angle: Math.PI / 2 }
     ]
-}
+};
 
 const Level2: ILevel = {
     id: 'Level2',
@@ -75,11 +76,12 @@ const Level2: ILevel = {
     .............`,
 
     enemies: [
-        new EnemyTankRapid({ x: 200, y: 250 }, Math.PI / 2),
-        new EnemyTankRapid({ x: 500, y: 250 }, Math.PI / 2),
-        new EnemyTankRapid({ x: 800, y: 250 }, Math.PI / 2)
+        { type: 'EnemyTankRapid', position: { x: 200, y: 250 }, angle: Math.PI / 2 },
+        { type: 'EnemyTankRapid', position: { x: 500, y: 250 }, angle: Math.PI / 2 },
+        { type: 'EnemyTankRapid', position: { x: 800, y: 250 }, angle: Math.PI / 2 }
     ]
-}
+};
+
 
 const LevelRandom: ILevel = {
     id: 'LevelRandom',
@@ -87,9 +89,9 @@ const LevelRandom: ILevel = {
     map: ``,
 
     enemies: [
-        new EnemyTankStrong({ x: 200, y: 250 }, Math.PI / 2),
-        new EnemyTankStrong({ x: 500, y: 250 }, Math.PI / 2),
-        new EnemyTankStrong({ x: 800, y: 250 }, Math.PI / 2)
+        { type: 'EnemyTankStrong', position: { x: 200, y: 250 }, angle: Math.PI / 2 },
+        { type: 'EnemyTankStrong', position: { x: 500, y: 250 }, angle: Math.PI / 2 },
+        { type: 'EnemyTankStrong', position: { x: 800, y: 250 }, angle: Math.PI / 2 }
     ]
 };
 

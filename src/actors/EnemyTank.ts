@@ -111,7 +111,8 @@ export class EnemyTank extends Actor {
 
       //Funcion de cambio de direccion aleatorio en funcion de cierta probabilidad
       let probabilityChange = lodash.random(0, 99);
-      if (probabilityChange > 96 && this.timerChangeDirection.time > 1) {
+      if (probabilityChange > 97 && this.timerChangeDirection.time > 1) {
+        //console.log(probabilityChange)
         this.getNewRandomDirection();
         this.timerChangeDirection.time = 0;
       }

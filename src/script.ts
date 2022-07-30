@@ -10,34 +10,85 @@ const audioPause = new Audio(audioURL.toString());
 audioURL = new URL('./assets/sounds/play.mp3', import.meta.url)
 const audioPlay = new Audio(audioURL.toString());
 
+audioURL = new URL('./assets/sounds/start_level.mp3', import.meta.url)
+const audioStartLevel = new Audio(audioURL.toString());
+
 audioPause.volume = 1;
 audioPlay.volume = 1;
+audioStartLevel.volume = 1;
+
+let button_level1: HTMLButtonElement;
+let button_level2: HTMLButtonElement;
+let button_random: HTMLButtonElement;
+let button_controls: HTMLButtonElement;
+let button_back: HTMLButtonElement;
+let menu: HTMLCanvasElement;
+let controls: HTMLCanvasElement;
+let canvas: HTMLCanvasElement;
+let ctx: CanvasRenderingContext2D;
+
+window.onload = () => {
+  button_level1 = document.getElementById('level1') as HTMLButtonElement;
+  button_level2 = document.getElementById('level2') as HTMLButtonElement;
+  button_random = document.getElementById('levelRandom') as HTMLButtonElement;
+  button_controls = document.getElementById('controls') as HTMLButtonElement;
+  button_back = document.getElementById('back') as HTMLButtonElement;
+  menu = document.getElementById('menu-container') as HTMLCanvasElement;
+  controls = document.getElementById('controls-container') as HTMLCanvasElement;
+  canvas = document.getElementById('canvas') as HTMLCanvasElement;
+  ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
 
+  button_controls.addEventListener('click', (e) => {
+    controls.classList.remove('hidden')
+    menu.classList.add('hidden')
+  });
 
+  button_back.addEventListener('click', (e) => {
+    menu.classList.remove('hidden')
+    controls.classList.add('hidden')
+  });
 
-//window.onload = () => {
-const button_level1 = document.getElementById('level1') as HTMLButtonElement;
-const button_level2 = document.getElementById('level2') as HTMLButtonElement;
-const button_random = document.getElementById('levelRandom') as HTMLButtonElement;
-const button_controls = document.getElementById('controls') as HTMLButtonElement;
-const button_back = document.getElementById('back') as HTMLButtonElement;
-const menu = document.getElementById('menu-container') as HTMLCanvasElement;
-const controls = document.getElementById('controls-container') as HTMLCanvasElement;
-const canvas = document.getElementById('canvas') as HTMLCanvasElement;
-const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
-//}
+  button_level1.addEventListener('click', (e) => {
+    canvas.classList.remove('hidden')
+    menu.classList.add('hidden')
+    createNewGame('1');
+  });
+
+  button_level2.addEventListener('click', (e) => {
+    canvas.classList.remove('hidden')
+    menu.classList.add('hidden')
+    createNewGame('2');
+  });
+
+  button_random.addEventListener('click', (e) => {
+    canvas.classList.remove('hidden')
+    menu.classList.add('hidden')
+    createNewGame('-1');
+  });
+}
 
 export let actors: IActor[];
 export let gameGUI: IGameManager;
 let lastFrame = 0;
 
-
-const createNewGame = (leverNumber: string) => {
-  actors = [];
-  gameGUI = new GameManager(leverNumber);
-  window.requestAnimationFrame(render);
+const delay = (time: number) => {
+  return new Promise(resolve => setTimeout(resolve, time));
 }
+
+const createNewGame = (levelString: string) => {
+  audioStartLevel.load();
+  audioStartLevel.play();
+  actors = [];
+  gameGUI = new GameManager(levelString);
+  gameGUI.paintBackground(ctx)
+  gameGUI.draw(ctx, 0)
+
+  delay(1300).then(() => {
+    gameGUI.chrono = { time: 0, active: true };
+    window.requestAnimationFrame(render);
+  });
+};
 
 
 
@@ -56,8 +107,6 @@ actors = [
 const render = (time: number) => {
   let delta = (time - lastFrame) / 1000;
   lastFrame = time;
-
-  console.log('actors', actors)
 
   gameGUI.update(delta)
 
@@ -108,8 +157,10 @@ document.body.addEventListener('keydown', (e) => {
     if (gameGUI.winState === false && gameGUI.loseState === false) {
       gameGUI.loseState = true;
     } else {
-      menu.classList.remove('hidden')
-      canvas.classList.add('hidden')
+      menu.classList.remove('hidden');
+      canvas.classList.add('hidden');
+      gameGUI.audioLose.load();
+      gameGUI.audioWin.load();
     };
   } else {
     if (gameGUI.pause === false) {
@@ -126,32 +177,4 @@ document.body.addEventListener('keyup', (e) => {
       actor.keyboard_event_up(e.key);
     });
   };
-});
-
-button_controls.addEventListener('click', (e) => {
-  controls.classList.remove('hidden')
-  menu.classList.add('hidden')
-});
-
-button_back.addEventListener('click', (e) => {
-  menu.classList.remove('hidden')
-  controls.classList.add('hidden')
-});
-
-button_level1.addEventListener('click', (e) => {
-  canvas.classList.remove('hidden')
-  menu.classList.add('hidden')
-  createNewGame('1');
-});
-
-button_level2.addEventListener('click', (e) => {
-  canvas.classList.remove('hidden')
-  menu.classList.add('hidden')
-  createNewGame('2');
-});
-
-button_random.addEventListener('click', (e) => {
-  canvas.classList.remove('hidden')
-  menu.classList.add('hidden')
-  createNewGame('-1');
 });

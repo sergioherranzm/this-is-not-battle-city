@@ -14,7 +14,7 @@ body {
   border: 1px solid black;
   /* box-sizing: border-box; */
   animation-name: appearance;
-  animation-duration: 1s;
+  animation-duration: 1.2s;
 }
 
 #container {
