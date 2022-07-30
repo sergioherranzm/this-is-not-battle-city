@@ -2,41 +2,195 @@ body {
   width: 100vw;
   height: 100vh;
   margin: 0;
+  padding: 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  /*backgound-image: url();*/
+  background-image: url(/background.png);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+button {
+  padding: 10px;
+  color: whitesmoke;
+  font-family: 'Lucida Sans';
+  font-weight: 600;
+  font-size: 100%;
+  border: 4px solid black;
+  border-radius: 10%;
+  background-image: url(/metal.jpg);
+  background-size: cover;
+  background-repeat: no-repeat;
+  width: 150px;
+  height: 50px;
+  animation-name: appearance_button;
+  animation-duration: 0.8s;
+}
+
+button:hover {
+  border: 4px solid blue;
+}
+
+p {
+  margin: 0;
+  padding: 0;
+}
+
+h1 {
+  margin: 20px 0;
+  padding: 0;
+}
+
+h4 {
+  margin: 5px 0;
+  padding: 0;
 }
 
 #canvas {
   width: 500px;
   height: 500px;
+  background-color: black;
   border: 1px solid black;
-  /* box-sizing: border-box; */
-  animation-name: appearance;
+  animation-name: appearance_canvas;
   animation-duration: 1.2s;
 }
 
 #container {
+  margin-top: 20vh;
   width: 100vw;
-  height: 100vh;
+  height: 80vh;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  gap: 50px;
+}
+
+#menu-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  width: 200px;
+  gap: 25px;
+  background-color: black;
+  background-image: url(/metalplate_menu.jpg);
+  background-size: cover;
+  background-repeat: no-repeat;
+  animation-name: appearance_menu;
+  animation-duration: 0.8s;
+}
+
+#level-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  height: 400px;
+  width: 200px;
+  gap: 10px;
+  background-color: black;
+  background-image: url(/metalplate_levels.jpg);
+  background-size: cover;
+  background-repeat: no-repeat;
+  animation-name: appearance_levels;
+  animation-duration: 0.8s;
+}
+
+#controls-container {
+  color: black;
+  font-family: 'Lucida Sans';
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  height: 500px;
+  width: 400px;
+  background-color: black;
+  background-image: url(/metalplate_controls.jpg);
+  background-size: cover;
+  background-repeat: no-repeat;
+  animation-name: appearance_controls;
+  animation-duration: 0.8s;
+}
+
+.flex-container-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  /*align-items: center;*/
+}
+
+.flex-container-column {
+  display: flex;
+  flex-direction: column;
+  /*justify-content: center;*/
+  align-items: center;
+}
+
+.enemy-types {
+  gap: 20px !important;
+}
+
+.movement-container {
+  gap: 5px !important;
+}
+
+.levelButtons {
+  gap: 8px !important;
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
-@keyframes appearance {
+@keyframes appearance_canvas {
   from {
     height: 0;
   }
 
   to {
     height: 500px;
+  }
+}
+
+@keyframes appearance_menu {
+  from {
+    height: 0;
+  }
+
+  to {
+    height: 300px;
+  }
+}
+
+@keyframes appearance_levels {
+  from {
+    height: 0;
+  }
+
+  to {
+    height: 400px;
+  }
+}
+
+@keyframes appearance_controls {
+  from {
+    height: 0;
+  }
+
+  to {
+    height: 500px;
+  }
+}
+
+@keyframes appearance_button {
+  from {
+    height: 0;
+  }
+
+  to {
+    height: 50px;
   }
 }

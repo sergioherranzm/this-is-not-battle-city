@@ -7,28 +7,60 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Document</title>
   <link rel="stylesheet" href="/style.css" />
-
 </head>
 
 <body>
   <div id="container">
     <div id="controls-container" class="hidden">
-      <h1>Controles</h1>
-      <p>Flechas = movimiento</p>
-      <p>Control = disparo</p>
-      <p>P = PAUSE / UNPAUSE</p>
-      <h1>Enemigos</h1>
-      <p>normal</p>
-      <p>Rosa = veloz (+ vel mov)</p>
-      <p>Verde = disparo potente (+ vida, + disparo, - vel mov)</p>
-      <p>Negro = duro (++ vida, -- vel mov)</p>
-      <button id="back">Back to menu</button>
+      <div class="enemt-types flex-container-column">
+        <div class="movement-container flex-container-column">
+          <h1>Controls</h1>
+          <p>Movement: &larr; &uarr; &darr; &rarr;</p>
+          <p>Shooting: Ctrl</p>
+          <p>Pause/Unpause: p</p>
+          <p>Quit: Esc</p>
+        </div>
+        <div class="enemies-container flex-container-column">
+          <h1>Enemy Tanks</h1>
+          <div class="enemy-types flex-container-row">
+            <div class="flex-container-column"> <img src="/EnemyStandard_Tank_A.png" alt="EnemyStandard" width="40px"
+                height="40px">
+              <h4>NORMAL</h4>
+            </div>
+            <div class="flex-container-column"> <img src="/EnemyRapid_Tank_A.png" alt="EnemyRapid" width="40px"
+                height="40px">
+              <h4>RADIP</h4>
+              <p>++ speed</p>
+            </div>
+            <div class="flex-container-column"> <img src="/EnemyStrong_Tank_A.png" alt="EnemyStrong" width="40px"
+                height="40px">
+              <h4>STRONG</h4>
+              <p>+ life</p>
+              <p>+ power</p>
+              <p>- speed</p>
+            </div>
+            <div class="flex-container-column"> <img src="/EnemyHeavy_Tank_A.png" alt="EnemyHeavy" width="40px"
+                height="40px">
+              <h4>HEAVY</h4>
+              <p>++ life</p>
+              <p>-- speed</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button id="back_controls">Back to menu</button>
     </div>
     <canvas id="canvas" width="1300" height="1500" class="hidden"></canvas>
+    <div id="level-container" class="hidden">
+      <div class="levelButtons flex-container-column">
+        <button id="level1">Level 1</button>
+        <button id="level2">Level 2</button>
+        <button id="levelRandom">Random Level</button>
+      </div>
+      <button id="back_levels">Back to menu</button>
+    </div>
     <div id="menu-container" class="">
-      <button id="level1">Play Level 1</button>
-      <button id="level2">Play Level 2</button>
-      <button id="levelRandom">Play Random Level</button>
+      <button id="levels">Play game</button>
       <button id="controls">Instructions</button>
     </div>
   </div>
