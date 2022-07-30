@@ -1,6 +1,6 @@
 import { Point } from "./Point";
 
-interface IEnemy {
+export interface IEnemy {
   type: string;
   position: Point;
   angle: number;
@@ -8,6 +8,7 @@ interface IEnemy {
 
 export interface ILevel {
   id: string;
+  background: string;
   map: string;
   enemies: IEnemy[];
 }

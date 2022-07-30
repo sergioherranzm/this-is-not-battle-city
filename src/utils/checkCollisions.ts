@@ -29,13 +29,28 @@ audioDestroyBox.volume = 0.15;
 audioHitRock.volume = 1;
 
 export const checkMapLimits = (position: Point, size: Size): boolean => {
+  //funcion para detectar si el actor se sale del mapa / devuelve true si no se sale del mapa
   return (
     position.x + size.width / 2 < 1300 && position.x - size.width / 2 > 0 && position.y + size.height / 2 < 1500 && position.y - size.height / 2 > 200
   );
 };
 
+export const checkFreeSpawn = (mainActor: Actor): boolean => {
+  //funcion para detectar si hay actores en el spawn / devuelve true si hay colision
+  const actorsCollisions = actors.filter(act => (act instanceof EnemyTank));
+  for (let i = 0; i <= actorsCollisions.length - 1; i++) {
+    let otherActor = actorsCollisions[i];
+    if (otherActor !== mainActor) {
+      if (mainActor.size.width / 2 + otherActor.size.width / 2 >= Math.abs(mainActor.position.x - otherActor.newPos.x) && mainActor.size.height / 2 + otherActor.size.height / 2 >= Math.abs(mainActor.position.y - otherActor.newPos.y)) {
+        return true;
+      };
+    };
+  };
+  return false;
+};
+
 export const checkMoveCollisions = (mainActor: Actor): boolean => {
-  //funcion para detertar colisiones entre actores
+  //funcion para detectar colisiones entre actores / devuelve true si hay colision
   const actorsCollisions = actors.filter(act => (act.actorCollisions === true));
   for (let i = 0; i <= actorsCollisions.length - 1; i++) {
     let otherActor = actorsCollisions[i];

@@ -7,6 +7,11 @@ import sprite_water from '../assets/tiles/water.png';
 import { actors } from '../script';
 import { Timer } from '../types/Timer';
 
+export class SpawnPlayerP1 extends MapBlock {
+  constructor(position: Point) {
+    super(position, 99 ** 99, '', false, false, false);
+  };
+};
 
 export class DestructibleBlock extends MapBlock {
 

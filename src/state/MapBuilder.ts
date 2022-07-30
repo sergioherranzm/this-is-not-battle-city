@@ -1,28 +1,51 @@
-import { ILevel } from "../types/Level";
+import { ILevel, IEnemy } from "../types/Level";
 import { allLevels } from './Levels';
 import { actors } from '../script'
-import { DestructibleBlock, NotDestructibleBlock, WaterBlock } from '../actors/MapBlockClasses';
+import { DestructibleBlock, NotDestructibleBlock, WaterBlock, SpawnPlayerP1 } from '../actors/MapBlockClasses';
 import { EnemyTankHeavy, EnemyTankRapid, EnemyTankStandard, EnemyTankStrong } from "../actors/EnemyTankClasses";
+import lodash from 'lodash'
+import backgroundRocks from '../assets/background/Ground_Tile_01_A.png'
+import backgroundGrass from '../assets/background/Ground_Tile_02_B.png'
+import backgroundDirt from '../assets/background/Ground_Tile_02_C.png'
 
-
+export let chosenLevel: ILevel;
 
 export const MapBuilder = (level: number) => {
 
-  let chosenLevel: ILevel | undefined;
-
   if (level < 0) {
     //Level random
-    chosenLevel = allLevels.find(e => e.id === `LevelRandom`);
-    //call RandomMapGemerator();
+    chosenLevel = allLevels.find(e => e.id === `LevelRandom`) as ILevel;
+    chosenLevel.map = getRandomMap();
+    chosenLevel.background = getRandomBackground();
+    pushRandomEnemies();
+
   } else {
-    chosenLevel = allLevels.find(e => e.id === `Level${level}`);
-  }
+    chosenLevel = allLevels.find(e => e.id === `Level${level}`) as ILevel;
+
+    //AÑADIR ENEMIGOS
+    chosenLevel.enemies.forEach(e => {
+
+      switch (e.type) {
+        case 'EnemyTankStandard':
+          actors.push(new EnemyTankStandard(e.position, e.angle));
+          break;
+
+        case 'EnemyTankRapid':
+          actors.push(new EnemyTankRapid(e.position, e.angle));
+          break;
+
+        case 'EnemyTankStrong':
+          actors.push(new EnemyTankStrong(e.position, e.angle));
+          break;
+
+        case 'EnemyTankHeavy':
+          actors.push(new EnemyTankHeavy(e.position, e.angle));
+          break;
+      };
+    });
+  };
 
   //AÑADIR MAPA
-  if (!chosenLevel) {
-    chosenLevel = allLevels[0];
-  }
-
   let map = chosenLevel.map.split('\n').map((row) => row.trim().split(''));
 
   const w = 100; //ctx.canvas.width / 13;
@@ -38,8 +61,8 @@ export const MapBuilder = (level: number) => {
         case '.': // whitespace
 
           break;
-        case '%': //player spawnpoint
-
+        case '%': //player 1 spawnpoint
+          actors.push(new SpawnPlayerP1({ x: x_pos + w / 2, y: y_pos + h / 2 }))
           break;
         case '*': //enemy spawnpoint
 
@@ -61,27 +84,73 @@ export const MapBuilder = (level: number) => {
     });
     y_pos += h;
   });
+};
 
-  //AÑADIR ENEMIGOS
-  chosenLevel.enemies.forEach(e => {
+const getRandomMap = (): string => {
+  let newMap: string[][] = [[], [], [], [], [], [], [], [], [], [], [], [], []]
+  let probability_y: number;
+  let probability_x: number;
+  for (let y = 0; y <= 12; y++) {
+    for (let x = 0; x <= 12; x++) {
+      probability_y = lodash.random(1, 100);
+      if (probability_y < 60) {
+        newMap[y].push('.');
+      } else if (probability_y >= 60 && probability_y < 85) {
+        newMap[y].push('O');
+      } else if (probability_y >= 85 && probability_y < 95) {
+        newMap[y].push('X');
+      } else if (probability_y >= 95 && probability_y <= 100) {
+        newMap[y].push('S');
+      }
+    };
+  };
 
-    switch (e.type) {
-      case 'EnemyTankStandard':
-        actors.push(new EnemyTankStandard(e.position, e.angle));
+  while (true) {
+    probability_y = lodash.random(0, 12);
+    probability_x = lodash.random(0, 12);
+    if (newMap[probability_y][probability_x] === '.') {
+      newMap[probability_y][probability_x] = '%';
+      break;
+    };
+  };
+
+  return newMap.map(y => y.join('')).join('\n')
+};
+
+const pushRandomEnemies = (): void => {
+  let numberOfEnemies: number = lodash.random(3, 6);
+  const EnemyTypes = ['EnemyTankStandard', 'EnemyTankRapid', 'EnemyTankStrong', 'EnemyTankHeavy']
+
+  for (let e = 1; e <= numberOfEnemies; e++) {
+    let probability_y: number;
+    let probability_x: number;
+
+    while (true) {
+      probability_y = lodash.random(0, 12);
+      probability_x = lodash.random(0, 12);
+      let actualMap = chosenLevel.map.split('\n').map(y => y.split(''));
+      if (actualMap[probability_y][probability_x] === '.') {
+        switch (EnemyTypes[lodash.random(0, 3)]) {
+          case 'EnemyTankStandard':
+            actors.push(new EnemyTankStandard({ x: (probability_x * 100) + 50, y: (probability_y * 100) + 250 }, Math.PI / 2));
+            break;
+          case 'EnemyTankRapid':
+            actors.push(new EnemyTankRapid({ x: (probability_x * 100) + 50, y: (probability_y * 100) + 250 }, Math.PI / 2));
+            break;
+          case 'EnemyTankStrong':
+            actors.push(new EnemyTankStrong({ x: (probability_x * 100) + 50, y: (probability_y * 100) + 250 }, Math.PI / 2));
+            break;
+          case 'EnemyTankHeavy':
+            actors.push(new EnemyTankHeavy({ x: (probability_x * 100) + 50, y: (probability_y * 100) + 250 }, Math.PI / 2));
+            break;
+        };
         break;
+      };
+    };
+  };
+};
 
-      case 'EnemyTankRapid':
-        actors.push(new EnemyTankRapid(e.position, e.angle));
-        break;
-
-      case 'EnemyTankStrong':
-        actors.push(new EnemyTankStrong(e.position, e.angle));
-        break;
-
-      case 'EnemyTankHeavy':
-        actors.push(new EnemyTankHeavy(e.position, e.angle));
-        break;
-    }
-  })
-
+const getRandomBackground = (): string => {
+  const backgroundTiles = [backgroundDirt, backgroundGrass, backgroundRocks];
+  return backgroundTiles[lodash.random(0, 2)];
 };

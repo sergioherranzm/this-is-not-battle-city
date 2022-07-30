@@ -2,12 +2,12 @@ import { IGUIItem } from './GUIItem';
 import { GUIHearth } from './GUIHearth';
 import { GUIEnemy } from './GUIEnemy';
 import { actors } from '../script'
-import { MapBuilder } from './MapBuilder'
+import { MapBuilder, chosenLevel } from './MapBuilder'
+import { SpawnPlayerP1 } from '../actors/MapBlockClasses';
 import { PlayerTank } from '../actors/PlayerTank';
 import { EnemyTank } from '../actors/EnemyTank';
 import { Timer } from '../types/Timer';
 import { MAP_P1, MAP_P2 } from '../utils/keyboardMap';
-import backgroundSpriteFile from '../assets/background/Ground_Tile_01_B.png'
 const audioURLWin = new URL('../assets/sounds/win.mp3', import.meta.url)
 const audioURLLose = new URL('../assets/sounds/lose.mp3', import.meta.url)
 
@@ -66,13 +66,8 @@ export class GameManager implements IGameManager {
     this.score = 0;
     this.FPS = 0;
 
-    MapBuilder(+this.level)
-
     this.aHearthsP1 = []
     this.aEnemies = []
-
-    this.backgroundSprite = new Image();
-    this.backgroundSprite.src = backgroundSpriteFile;
 
     this.pause = false;
     this.winState = false;
@@ -80,13 +75,25 @@ export class GameManager implements IGameManager {
     //this.escapeState = false;
 
     this.audioWin = new Audio(audioURLWin.toString());
-    this.audioWin.volume = 1;
+    this.audioWin.volume = 0.5;
     this.audioWinPlayed = false;
     this.audioLose = new Audio(audioURLLose.toString());
-    this.audioLose.volume = 1;
+    this.audioLose.volume = 0.5;
     this.audioLosePlayed = false;
 
-    actors.push(new PlayerTank({ x: 650, y: 850 }, 3, -Math.PI / 2, MAP_P1))
+    MapBuilder(+this.level)
+
+    this.backgroundSprite = new Image();
+    this.backgroundSprite.src = chosenLevel.background;
+
+    /*
+    actors.filter((act): act is SpawnPlayerP1 => (act instanceof SpawnPlayerP1)).forEach((s) => {
+      actors.push(new PlayerTank(s.position, 3, -Math.PI / 2, MAP_P1))
+    });*/
+
+    const SpawnP1: SpawnPlayerP1 = actors.find((act): act is SpawnPlayerP1 => (act instanceof SpawnPlayerP1)) as SpawnPlayerP1;
+    actors.push(new PlayerTank(SpawnP1.position, 3, -Math.PI / 2, MAP_P1));
+
   }
 
   update(delta: number): void {
@@ -101,7 +108,6 @@ export class GameManager implements IGameManager {
         this.livesP1 = actorsOnlyPlayers[i].health
         if (actorsOnlyPlayers[i].health <= 0) {
           this.loseState = true;
-          this.chrono.active = false;
         };
       } /*else if (actorsOnlyPlayers[i].keyboardMap === MAP_P2) {
         this.livesP2 = actorsOnlyPlayers[i].health
@@ -141,11 +147,11 @@ export class GameManager implements IGameManager {
 
     if (actorsOnlyEnemies.length === 0) {
       this.winState = true;
-      this.chrono.active = false;
       //actors.length = 0;
     };
 
     if (this.loseState === true || this.winState === true) {
+      this.chrono.active = false;
       actors.filter((act): act is PlayerTank => (act instanceof PlayerTank)).forEach((t) => {
         t.audioIdle.load();
         t.audioAcc.load();
@@ -173,7 +179,7 @@ export class GameManager implements IGameManager {
       ctx.font = '600 120px Verdana';
       ctx.fillText(`YOU LOSE!`, 300, 450);
       ctx.font = 'bold 90px Verdana';
-      ctx.fillText(`SCORE: ${this.score}`, 370, 750);
+      ctx.fillText(`SCORE: ${this.score}`, 360, 750);
       ctx.font = '50px Verdana';
       ctx.fillText(`Press ESC to continue...`, 350, 1400);
 

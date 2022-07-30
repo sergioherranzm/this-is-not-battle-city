@@ -191,16 +191,6 @@ export class EnemyTank extends Actor {
     }
     this.tankAngle = newDirection
 
-    /*
-        let newDirection = directions[Math.floor(Math.random() * 4)]
-        while (newDirection == this.tankAngle) {
-          newDirection = directions[Math.floor(Math.random() * 4)]
-        }
-    */
-    // this.tankAngle = newDirection
-
-
-    //this.tankAngle += Math.PI / 2
     this.tankMaxSpeed = this.tankDefaultMaxSpeed;
-  }
-}
+  };
+};

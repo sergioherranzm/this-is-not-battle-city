@@ -1,6 +1,7 @@
 import { Actor } from './Actor';
 import { Point } from '../types/Point';
-import { checkMapLimits, checkMoveCollisions } from '../utils/checkCollisions';
+import { checkMapLimits, checkMoveCollisions, checkFreeSpawn } from '../utils/checkCollisions';
+import { SpawnPlayerP1 } from '../actors/MapBlockClasses';
 import { CarKeys, KeyboardMap } from '../utils/keyboardMap';
 import { actors } from '../script';
 import { Bullet } from './Bullet';
@@ -31,6 +32,7 @@ export class PlayerTank extends Actor {
   audioAcc: HTMLAudioElement;
   respawnTimer: Timer;
   audioRespawn: HTMLAudioElement;
+  tankSpawnPoint: SpawnPlayerP1;
 
   loseLiveSprite: HTMLImageElement;
   loseLiveFrame: number;
@@ -53,7 +55,8 @@ export class PlayerTank extends Actor {
     this.keyboardMap = keyboardMap;
     this.newPos = position;
     this.newPosGuess = position;
-    this.respawnTimer = { time: 0, active: true };
+    this.respawnTimer = { time: -3, active: true };
+    this.tankSpawnPoint = actors.find((act): act is SpawnPlayerP1 => (act instanceof SpawnPlayerP1)) as SpawnPlayerP1;
 
     this.actorSprite = new Image();
     this.actorSprite.src = sprite_1;
@@ -67,21 +70,16 @@ export class PlayerTank extends Actor {
     this.loseLiveTimer = { active: false, time: 0 };
 
     this.audioShot = new Audio(audioURLShot.toString());
-    this.audioShot.volume = 1;
-
     this.audioIdle = new Audio(audioURLIdle.toString());
-    this.audioIdle.volume = 0.06;
     this.audioIdle.loop = true;
-
     this.audioAcc = new Audio(audioURLAcc.toString());
     this.audioAcc.loop = true;
-
     this.audioLoseLive = new Audio(audioURLLoseLive.toString());
-    this.audioLoseLive.volume = 0.3;
-
     this.audioRespawn = new Audio(audioURLRespawn.toString());
-    this.audioRespawn.volume = 0.2;
-
+    this.audioShot.volume = 1;
+    this.audioIdle.volume = 0.2;
+    this.audioLoseLive.volume = 0.4;
+    this.audioRespawn.volume = 0.3;
   }
 
   update(delta: number): void {
@@ -142,19 +140,21 @@ export class PlayerTank extends Actor {
       if (this.loseLiveFrame === 0) {
         this.audioLoseLive.load();
         this.audioLoseLive.play();
-        //this.audioAcc.load();
-        //this.audioIdle.load();
-        //this.audioShot.load();
-      } else if (this.loseLiveFrame === 8) {
-        this.loseLiveTimer.active = false;
-        this.loseLiveTimer.time = 0;
-        this.loseLiveFrame = 0;
-        this.position = { x: 650, y: 850 }; //Posicion del spawn******************/
-        this.tankAngle = -Math.PI / 2
-        this.respawnTimer.active = true;
-        this.respawnTimer.time = 0;
-        this.audioRespawn.load();
-        this.audioRespawn.play();
+
+      } else if (this.loseLiveFrame >= 8) {
+
+        if (!checkFreeSpawn(this.tankSpawnPoint)) {
+          this.loseLiveTimer.active = false;
+          this.loseLiveTimer.time = 0;
+          this.loseLiveFrame = 0;
+          this.position = this.tankSpawnPoint.position;
+          this.tankAngle = -Math.PI / 2
+          this.respawnTimer.active = true;
+          this.respawnTimer.time = 0;
+          this.audioRespawn.load();
+          this.audioRespawn.play();
+        }
+
       };
 
     } else {//Si esta vivo y no ha perdido vida:
@@ -212,7 +212,7 @@ export class PlayerTank extends Actor {
         this.audioAcc.load();
       };
       if (this.tankMaxSpeed > 0) {
-        this.audioAcc.volume = 0.06;
+        this.audioAcc.volume = 0.1;
         this.audioAcc.play();
       } else {
         this.audioAcc.volume = this.audioAcc.volume * 0.9;

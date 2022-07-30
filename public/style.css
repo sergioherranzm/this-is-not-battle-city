@@ -13,6 +13,8 @@ body {
 
 button {
   padding: 10px;
+  width: 140px;
+  height: 50px;
   color: whitesmoke;
   font-family: 'Lucida Sans';
   font-weight: 600;
@@ -22,14 +24,32 @@ button {
   background-image: url(/metal.jpg);
   background-size: cover;
   background-repeat: no-repeat;
-  width: 150px;
-  height: 50px;
-  animation-name: appearance_button;
+  animation-name: appearance_button_normal;
   animation-duration: 0.8s;
 }
 
 button:hover {
   border: 4px solid blue;
+}
+
+.buttonLevel {
+  padding: 0;
+  width: 140px;
+  height: 30px;
+  animation-name: appearance_button_level;
+  animation-duration: 0.8s;
+}
+
+#muteMusic {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  padding: 0;
+  max-width: 100px;
+  height: 30px;
+  font-weight: 100;
+  font-size: 15px;
+  animation: none;
 }
 
 p {
@@ -87,8 +107,8 @@ h4 {
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
-  height: 400px;
-  width: 200px;
+  height: 500px;
+  width: 300px;
   gap: 10px;
   background-color: black;
   background-image: url(/metalplate_levels.jpg);
@@ -171,7 +191,7 @@ h4 {
   }
 
   to {
-    height: 400px;
+    height: 500px;
   }
 }
 
@@ -185,12 +205,22 @@ h4 {
   }
 }
 
-@keyframes appearance_button {
+@keyframes appearance_button_normal {
   from {
     height: 0;
   }
 
   to {
     height: 50px;
+  }
+}
+
+@keyframes appearance_button_level {
+  from {
+    height: 0;
+  }
+
+  to {
+    height: 30px;
   }
 }
