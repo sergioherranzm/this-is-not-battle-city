@@ -1,43 +1,280 @@
+import { Console } from 'console';
 import { IActor } from './actors/Actor';
-import { PlayerTank } from './actors/PlayerTank';
-import { Bullet } from './actors/Bullet';
-//import { FPSViewer } from './state/FPSViewer';
-import { GameManager } from './state/GameManager';
-import { MAP_P1, MAP_P2 } from './utils/keyboardMap';
-import { EnemyTankStandard, EnemyTankRapid, EnemyTankHeavy, EnemyTankStrong } from './actors/EnemyTankClasses';
+import { GameManager, IGameManager } from './state/GameManager';
 
-export let actors: IActor[] = []
+let audioURL = new URL('./assets/sounds/pause.mp3', import.meta.url);
+const audioPause = new Audio(audioURL.toString());
+
+audioURL = new URL('./assets/sounds/play.mp3', import.meta.url);
+const audioPlay = new Audio(audioURL.toString());
+
+audioURL = new URL('./assets/sounds/start_level.mp3', import.meta.url);
+const audioStartLevel = new Audio(audioURL.toString());
+
+audioURL = new URL('./assets/sounds/music_menu.mp3', import.meta.url); /************ */
+const audioMusic = new Audio(audioURL.toString());
+
+audioURL = new URL('./assets/sounds/button_hover.mp3', import.meta.url);
+const audioButtonHover = new Audio(audioURL.toString());
+
+audioURL = new URL('./assets/sounds/button_level.mp3', import.meta.url);
+const audioButtonLevel = new Audio(audioURL.toString());
+
+audioURL = new URL('./assets/sounds/button_click.mp3', import.meta.url);
+const audioButtonClick = new Audio(audioURL.toString());
+
+audioPause.volume = 1;
+audioPlay.volume = 1;
+audioStartLevel.volume = 1;
+audioMusic.volume = 0.1;
+audioMusic.loop = true;
+audioButtonHover.volume = 1;
+audioButtonLevel.volume = 1;
+audioButtonClick.volume = 1;
+
+let button_levels: HTMLButtonElement;
+let button_level1: HTMLButtonElement;
+let button_level2: HTMLButtonElement;
+let button_level3: HTMLButtonElement;
+let button_level4: HTMLButtonElement;
+let button_level5: HTMLButtonElement;
+let button_random: HTMLButtonElement;
+let button_controls: HTMLButtonElement;
+let button_back_controls: HTMLButtonElement;
+let button_back_levels: HTMLButtonElement;
+let button_mute: HTMLButtonElement;
+let menu: HTMLCanvasElement;
+let levels: HTMLCanvasElement;
+let controls: HTMLCanvasElement;
+let canvas: HTMLCanvasElement;
+let ctx: CanvasRenderingContext2D;
 
 window.onload = () => {
-  const canvas = document.getElementById('canvas') as HTMLCanvasElement;
-  const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
-  //createCircuit(car);
-  actors = [
-    new PlayerTank({ x: 650, y: 850 }, 3, -Math.PI / 2, MAP_P1),
-    new EnemyTankStandard({ x: 200, y: 250 }, Math.PI / 2),
-    new EnemyTankRapid({ x: 300, y: 300 }, -Math.PI / 2),
-    new EnemyTankStrong({ x: 800, y: 300 }, -Math.PI / 2),
-    new EnemyTankHeavy({ x: 900, y: 300 }, -Math.PI / 2),
-  ];
+  button_levels = document.getElementById('levels') as HTMLButtonElement;
+  button_level1 = document.getElementById('level1') as HTMLButtonElement;
+  button_level2 = document.getElementById('level2') as HTMLButtonElement;
+  button_level3 = document.getElementById('level3') as HTMLButtonElement;
+  button_level4 = document.getElementById('level4') as HTMLButtonElement;
+  button_level5 = document.getElementById('level5') as HTMLButtonElement;
+  button_random = document.getElementById('levelRandom') as HTMLButtonElement;
+  button_controls = document.getElementById('controls') as HTMLButtonElement;
+  button_back_controls = document.getElementById('back_controls') as HTMLButtonElement;
+  button_back_levels = document.getElementById('back_levels') as HTMLButtonElement;
+  button_mute = document.getElementById('muteMusic') as HTMLButtonElement;
+  menu = document.getElementById('menu-container') as HTMLCanvasElement;
+  levels = document.getElementById('level-container') as HTMLCanvasElement;
+  controls = document.getElementById('controls-container') as HTMLCanvasElement;
+  canvas = document.getElementById('canvas') as HTMLCanvasElement;
+  ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
-  let gameGUI = new GameManager();
 
-  let lastFrame = 0;
-  //Bucle de renderizado
-  const render = (time: number) => {
-    let delta = (time - lastFrame) / 1000;
-    lastFrame = time;
+  button_levels.addEventListener('click', (e) => {
+    audioButtonClick.load();
+    audioButtonClick.play();
+    levels.classList.remove('hidden');
+    menu.classList.add('hidden');
+  });
 
-    gameGUI.update(delta)
+  button_controls.addEventListener('click', (e) => {
+    audioButtonClick.load();
+    audioButtonClick.play();
+    controls.classList.remove('hidden');
+    menu.classList.add('hidden');
+  });
 
-    actors.forEach((actor) => {
-      actor.update(delta);
+  button_back_controls.addEventListener('click', (e) => {
+    audioButtonClick.load();
+    audioButtonClick.play();
+    menu.classList.remove('hidden');
+    controls.classList.add('hidden');
+  });
+
+  button_back_levels.addEventListener('click', (e) => {
+    audioButtonClick.load();
+    audioButtonClick.play();
+    menu.classList.remove('hidden');
+    levels.classList.add('hidden');
+  });
+
+  button_level1.addEventListener('click', (e) => {
+    audioButtonLevel.load();
+    audioButtonLevel.play();
+    audioMusic.load();
+    delay(200).then(() => {
+      canvas.classList.remove('hidden');
+      levels.classList.add('hidden');
+      createNewGame('1');
     });
+  });
+
+  button_level2.addEventListener('click', (e) => {
+    audioButtonLevel.load();
+    audioButtonLevel.play();
+    audioMusic.load();
+    delay(200).then(() => {
+      canvas.classList.remove('hidden');
+      levels.classList.add('hidden');
+      createNewGame('2');
+    });
+  });
+
+  button_level3.addEventListener('click', (e) => {
+    audioButtonLevel.load();
+    audioButtonLevel.play();
+    audioMusic.load();
+    delay(200).then(() => {
+      canvas.classList.remove('hidden');
+      levels.classList.add('hidden');
+      createNewGame('3');
+    });
+  });
+
+  button_level4.addEventListener('click', (e) => {
+    audioButtonLevel.load();
+    audioButtonLevel.play();
+    audioMusic.load();
+    delay(200).then(() => {
+      canvas.classList.remove('hidden');
+      levels.classList.add('hidden');
+      createNewGame('4');
+    });
+  });
+
+  button_level5.addEventListener('click', (e) => {
+    audioButtonLevel.load();
+    audioButtonLevel.play();
+    audioMusic.load();
+    delay(200).then(() => {
+      canvas.classList.remove('hidden');
+      levels.classList.add('hidden');
+      createNewGame('5');
+    });
+  });
+
+  button_random.addEventListener('click', (e) => {
+    audioButtonLevel.load();
+    audioButtonLevel.play();
+    audioMusic.load();
+    delay(200).then(() => {
+      canvas.classList.remove('hidden');
+      levels.classList.add('hidden');
+      createNewGame('-1');
+    });
+  });
+
+  button_mute.addEventListener('click', (e) => {
+    if (canvas.classList.contains('hidden')) {
+      if (button_mute.innerHTML === 'Music ON') {
+        audioMusic.pause();
+        button_mute.innerHTML = 'Music OFF';
+      } else {
+        audioMusic.play();
+        button_mute.innerHTML = 'Music ON';
+      };
+    };
+  });
+
+  button_levels.addEventListener('mouseover', (e) => {
+    audioButtonHover.load();
+    audioButtonHover.play();
+  });
+
+  button_controls.addEventListener('mouseover', (e) => {
+    audioButtonHover.load();
+    audioButtonHover.play();
+  });
+
+  button_back_controls.addEventListener('mouseover', (e) => {
+    audioButtonHover.load();
+    audioButtonHover.play();
+  });
+
+  button_back_levels.addEventListener('mouseover', (e) => {
+    audioButtonHover.load();
+    audioButtonHover.play();
+  });
+
+  button_level1.addEventListener('mouseover', (e) => {
+    audioButtonHover.load();
+    audioButtonHover.play();
+  });
+
+  button_level2.addEventListener('mouseover', (e) => {
+    audioButtonHover.load();
+    audioButtonHover.play();
+  });
+
+  button_level3.addEventListener('mouseover', (e) => {
+    audioButtonHover.load();
+    audioButtonHover.play();
+  });
+
+  button_level4.addEventListener('mouseover', (e) => {
+    audioButtonHover.load();
+    audioButtonHover.play();
+  });
+
+  button_level5.addEventListener('mouseover', (e) => {
+    audioButtonHover.load();
+    audioButtonHover.play();
+  });
+
+  button_random.addEventListener('mouseover', (e) => {
+    audioButtonHover.load();
+    audioButtonHover.play();
+  });
+
+  if (button_mute.innerHTML === 'Music ON') {
+    audioMusic.play();
+  }
+
+};
+
+
+export let actors: IActor[];
+export let gameGUI: IGameManager;
+let lastFrame = 0;
+
+const delay = (time: number) => {
+  return new Promise(resolve => setTimeout(resolve, time));
+}
+
+const createNewGame = (levelString: string) => {
+
+  actors = [];
+  gameGUI = new GameManager(levelString);
+  gameGUI.paintBackground(ctx);
+  gameGUI.draw(ctx, 0);
+
+  audioStartLevel.load();
+  audioStartLevel.play();
+
+
+  delay(1300).then(() => {
+    gameGUI.chrono = { time: -2, active: true };
+    window.requestAnimationFrame(render);
+  });
+};
+
+//Bucle de renderizado
+const render = (time: number) => {
+  let delta = (time - lastFrame) / 1000;
+  lastFrame = time;
+
+  gameGUI.update(delta);
+
+  if (gameGUI.loseState === false && gameGUI.winState === false) {
+
+    if (gameGUI.pause === false) {
+      actors.forEach((actor) => {
+        actor.update(delta);
+      });
+    };
 
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-    gameGUI.draw(ctx, delta)
+    gameGUI.paintBackground(ctx);
 
     actors.forEach((actor) => {
       ctx.save();
@@ -45,26 +282,63 @@ window.onload = () => {
       ctx.restore();
     });
 
-    /*//NO FUNCIONA------------------------------------------------------------
-    if (actors.filter(e => (e instanceof PlayerTank)).length = 0) {
-      console.log('insertnado new player')
-      actors.push(new PlayerTank({ x: 550, y: 650 }, 1, -Math.PI / 2, MAP_P1))
-    }//----------------------------------------------------------------------*/
-
-    window.requestAnimationFrame(render);
   };
 
-  window.requestAnimationFrame(render);
+  gameGUI.draw(ctx, delta);
 
-  document.body.addEventListener('keydown', (e) => {
-    actors.forEach((actor) => {
-      actor.keyboard_event_down(e.key);
-    });
-  });
+  if (!canvas.classList.contains('hidden')) {
+    window.requestAnimationFrame(render);
+  }
 
-  document.body.addEventListener('keyup', (e) => {
+};
+
+document.body.addEventListener('keydown', (e) => {
+  if (e.key === 'p') {
+    if (gameGUI.pause === false) {
+      gameGUI.pause = true;
+      gameGUI.chrono.active = false;
+      audioPause.load();
+      audioPause.play();
+    } else {
+      gameGUI.pause = false;
+      gameGUI.chrono.active = true;
+      audioPlay.load();
+      audioPlay.play();
+    }
+  } else if (e.key === 'Escape') {
+    if (!canvas.classList.contains('hidden')) {
+      if (gameGUI.winState === false && gameGUI.loseState === false) {
+        gameGUI.loseState = true;
+      } else {
+        levels.classList.remove('hidden');
+        canvas.classList.add('hidden');
+        gameGUI.audioLose.load();
+        gameGUI.audioWin.load();
+        if (button_mute.innerHTML === 'Music ON') {
+          audioMusic.play();
+        }
+      };
+    } else {
+      audioButtonClick.load();
+      audioButtonClick.play();
+      menu.classList.remove('hidden');
+      controls.classList.add('hidden');
+      levels.classList.add('hidden');
+    };
+
+  } else {
+    if (gameGUI.pause === false) {
+      actors.forEach((actor) => {
+        actor.keyboard_event_down(e.key);
+      });
+    };
+  };
+});
+
+document.body.addEventListener('keyup', (e) => {
+  if (gameGUI.pause === false) {
     actors.forEach((actor) => {
       actor.keyboard_event_up(e.key);
     });
-  });
-};
+  };
+});
