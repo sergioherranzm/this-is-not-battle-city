@@ -30,9 +30,7 @@ audioHitRock.volume = 1;
 
 export const checkMapLimits = (position: Point, size: Size): boolean => {
   //funcion para detectar si el actor se sale del mapa / devuelve true si no se sale del mapa
-  return (
-    position.x + size.width / 2 < 1300 && position.x - size.width / 2 > 0 && position.y + size.height / 2 < 1500 && position.y - size.height / 2 > 200
-  );
+  return (position.x + size.width / 2 < 1300 && position.x - size.width / 2 > 0 && position.y + size.height / 2 < 1500 && position.y - size.height / 2 > 200);
 };
 
 export const checkFreeSpawn = (mainActor: Actor): boolean => {
@@ -69,7 +67,6 @@ export const checkBulletCollisions = (attackBullet: Bullet, shooter: EnemyTank |
     if (defenderActor !== attackBullet && defenderActor !== shooter && defenderActor.bulletImpact === true) {
       if (attackBullet.size.width / 2 + defenderActor.size.width / 2 >= Math.abs(attackBullet.position.x - defenderActor.position.x) && attackBullet.size.height / 2 + defenderActor.size.height / 2 >= Math.abs(attackBullet.position.y - defenderActor.position.y)) {
 
-
         //Updates
         if (attackBullet.IFF !== defenderActor.IFF && defenderActor.bulletImpactDamage === true) {
           if (defenderActor instanceof PlayerTank) {
@@ -88,7 +85,6 @@ export const checkBulletCollisions = (attackBullet: Bullet, shooter: EnemyTank |
           };
         };
         attackBullet.health = 0;
-
 
         //Sounds
         if (defenderActor instanceof EnemyTank && shooter instanceof PlayerTank) {

@@ -12,9 +12,7 @@ export class MapBlock extends Actor {
     this.actorSprite.src = sprite;
   };
 
-  update(delta: number): void {
-
-  };
+  update(delta: number): void { };
 
   draw(ctx: CanvasRenderingContext2D, delta: number): void {
 

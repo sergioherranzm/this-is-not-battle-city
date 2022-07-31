@@ -1,7 +1,7 @@
 import { Point } from '../types/Point';
 import { Timer } from '../types/Timer';
-import { GUIItem } from './GUIItem'
-import sprite from '../assets/GUI.png'
+import { GUIItem } from './GUIItem';
+import sprite from '../assets/GUI.png';
 
 
 export class GUIHearth extends GUIItem {
@@ -19,10 +19,10 @@ export class GUIHearth extends GUIItem {
 
   update(delta: number): void {
     //Animacion
-    this.timer.time += delta
+    this.timer.time += delta;
     if (this.timer.time >= 0.08) {
       this.xFrame = (this.xFrame + 1) % 9;
-      this.timer.time = 0
+      this.timer.time = 0;
     };
   };
 
@@ -38,11 +38,6 @@ export class GUIHearth extends GUIItem {
       this.position.y,
       this.size.width,
       this.size.height
-    )
-
-    //ctx.fillStyle = 'red';
-    //ctx.fillRect(this.position.x, this.position.y, this.size.width, this.size.height);
-
+    );
   };
-
 };

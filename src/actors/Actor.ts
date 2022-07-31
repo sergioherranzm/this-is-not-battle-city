@@ -40,10 +40,10 @@ export class Actor implements IActor {
     this.bulletImpactDamage = bulletImpactDamage;
   }
 
-  update(delta: number) { }
+  update(delta: number) { };
 
-  draw(ctx: CanvasRenderingContext2D, delta: number) { }
+  draw(ctx: CanvasRenderingContext2D, delta: number) { };
 
-  keyboard_event_down(key: string) { }
-  keyboard_event_up(key: string) { }
-}
+  keyboard_event_down(key: string) { };
+  keyboard_event_up(key: string) { };
+};

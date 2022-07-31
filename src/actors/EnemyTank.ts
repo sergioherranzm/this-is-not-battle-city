@@ -3,11 +3,11 @@ import { Point } from '../types/Point';
 import { checkMapLimits, checkMoveCollisions } from '../utils/checkCollisions';
 import { actors } from '../script';
 import { Bullet } from './Bullet';
-import lodash from 'lodash'
+import lodash from 'lodash';
 import { Timer } from '../types/Timer';
-import sprite_explosion from '../assets/actors/explosion.png'
-import { gameGUI } from '../script'
-const audioURLDeath = new URL('../assets/sounds/enemy_death.mp3', import.meta.url)
+import sprite_explosion from '../assets/actors/explosion.png';
+import { gameGUI } from '../script';
+const audioURLDeath = new URL('../assets/sounds/enemy_death.mp3', import.meta.url);
 
 export class EnemyTank extends Actor {
   tankDrawAngle: number;
@@ -28,7 +28,6 @@ export class EnemyTank extends Actor {
   deathFrame: number;
   deathTimer: Timer;
   audioDeath: HTMLAudioElement;
-
 
   tankDefaultMaxSpeed: number;
   tankDefaultAngleSpeed: number;
@@ -75,16 +74,16 @@ export class EnemyTank extends Actor {
     //Update timers
     if (this.timerTankMove.active === true) {
       this.timerTankMove.time += delta;
-    }
+    };
     if (this.deathTimer.active === true) {
       this.deathTimer.time += delta;
-    }
+    };
     if (this.timerShoot.active === true) {
       this.timerShoot.time += delta;
-    }
+    };
     if (this.timerChangeDirection.active === true) {
       this.timerChangeDirection.time += delta;
-    }
+    };
 
     //Check life
     if (this.health <= 0) { //Si esta muerto:
@@ -93,18 +92,18 @@ export class EnemyTank extends Actor {
       if (this.deathTimer.time > 0.04) {
         this.deathFrame++;
         this.deathTimer.time = 0;
-      }
+      };
 
       if (this.deathFrame === 0) {
-        this.audioDeath.load()
-        this.audioDeath.play()
+        this.audioDeath.load();
+        this.audioDeath.play();
         this.actorCollisions = false;
         this.bulletImpact = false;
         this.bulletImpactDamage = false;
       } else if (this.deathFrame === 8) {
         gameGUI.score += this.tankScore;
-        const actorToRemove = actors.indexOf(this)
-        actors.splice(actorToRemove, 1)
+        const actorToRemove = actors.indexOf(this);
+        actors.splice(actorToRemove, 1);
       };
 
     } else { //Si esta vivo:
@@ -112,18 +111,19 @@ export class EnemyTank extends Actor {
       //Funcion de cambio de direccion aleatorio en funcion de cierta probabilidad
       let probabilityChange = lodash.random(0, 99);
       if (probabilityChange > 97 && this.timerChangeDirection.time > 1) {
-        //console.log(probabilityChange)
         this.getNewRandomDirection();
         this.timerChangeDirection.time = 0;
-      }
+      };
 
+      //Funcion para que el angulo de dibujado cambie suavemente al nuevo ángulo*****************
+      /*
       if (this.tankDrawAngle !== this.tankAngle) {
-        //Funcion para que el angulo de dibujado cmbie suavemente al nuevo ángulo*****************
         //this.angle += this.angleSpeed * delta;
-      }
+      };
       if (this.tankDrawAngle === 2 * Math.PI) {
-        this.tankDrawAngle = 0
-      }
+        this.tankDrawAngle = 0;
+      };
+      */
 
       this.tankSpeed = this.tankSpeed * 0.6 + this.tankMaxSpeed;
 
@@ -147,24 +147,24 @@ export class EnemyTank extends Actor {
       } else {
         this.tankMaxSpeed = 0;
         this.getNewRandomDirection();
-      }
+      };
 
       // Funcion de disparo automático cada x segundos
       if (this.timerShoot.time > this.tankshootSpeed) {
-        this.timerShoot.time = 0
-        actors.push(new Bullet({ x: this.position.x + (this.size.width / 2 * Math.cos(this.tankAngle)), y: this.position.y + (this.size.height / 2 * Math.sin(this.tankAngle)) }, 'Foe', this.bulletPower, this.tankAngle, this))
+        this.timerShoot.time = 0;
+        actors.push(new Bullet({ x: this.position.x + (this.size.width / 2 * Math.cos(this.tankAngle)), y: this.position.y + (this.size.height / 2 * Math.sin(this.tankAngle)) }, 'Foe', this.bulletPower, this.tankAngle, this));
       };
 
       //Animation
       if (this.tankSpeed > 0 && this.timerTankMove.time > 0.06) {
         if (this.activeSprite === 'sprite_1') {
           this.actorSprite.src = this.actorSpriteString_2;
-          this.activeSprite = 'sprite_2'
+          this.activeSprite = 'sprite_2';
         } else if (this.activeSprite === 'sprite_2') {
           this.actorSprite.src = this.actorSpriteString_1;
-          this.activeSprite = 'sprite_1'
+          this.activeSprite = 'sprite_1';
         };
-        this.timerTankMove.time = 0
+        this.timerTankMove.time = 0;
       };
     };
   };
@@ -173,23 +173,23 @@ export class EnemyTank extends Actor {
 
     if (this.health <= 0) {
       ctx.translate(this.position.x, this.position.y);
-      ctx.drawImage(this.deathSprite, this.deathFrame * 256, 0, 256, 256, - this.size.width / 2, - this.size.height / 2, this.size.width, this.size.height)
+      ctx.drawImage(this.deathSprite, this.deathFrame * 256, 0, 256, 256, - this.size.width / 2, - this.size.height / 2, this.size.width, this.size.height);
     } else {
       ctx.translate(this.position.x, this.position.y);
       ctx.rotate(this.tankAngle + Math.PI / 2);
-      ctx.drawImage(this.actorSprite, - this.size.width / 2, - this.size.height / 2, this.size.width, this.size.height)
+      ctx.drawImage(this.actorSprite, - this.size.width / 2, - this.size.height / 2, this.size.width, this.size.height);
     };
 
   };
 
   getNewRandomDirection(): void {
-    const directions: number[] = [0, Math.PI / 2, Math.PI, -Math.PI / 2]
+    const directions: number[] = [0, Math.PI / 2, Math.PI, -Math.PI / 2];
 
-    let newDirection = directions[lodash.random(0, 3)]
+    let newDirection = directions[lodash.random(0, 3)];
     while (newDirection === this.tankAngle) {
-      newDirection = directions[lodash.random(0, 3)]
-    }
-    this.tankAngle = newDirection
+      newDirection = directions[lodash.random(0, 3)];
+    };
+    this.tankAngle = newDirection;
 
     this.tankMaxSpeed = this.tankDefaultMaxSpeed;
   };

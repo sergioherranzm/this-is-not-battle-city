@@ -1,7 +1,7 @@
 import { ILevel } from "../types/Level";
-import backgroundRocks from '../assets/background/Ground_Tile_01_A.png'
-import backgroundGrass from '../assets/background/Ground_Tile_02_B.png'
-import backgroundDirt from '../assets/background/Ground_Tile_02_C.png'
+import backgroundRocks from '../assets/background/Ground_Tile_01_A.png';
+import backgroundGrass from '../assets/background/Ground_Tile_02_B.png';
+import backgroundDirt from '../assets/background/Ground_Tile_02_C.png';
 
 /*
     . = whithespace
@@ -172,12 +172,12 @@ const Level5: ILevel = {
     X.....X.....X`,
 
     enemies: [
-        { type: 'EnemyTankRapid', position: { x: 350, y: 1400 }, angle: Math.PI / 2 },
-        { type: 'EnemyTankRapid', position: { x: 350, y: 250 }, angle: Math.PI / 2 },
-        { type: 'EnemyTankRapid', position: { x: 950, y: 750 }, angle: Math.PI / 2 },
+        { type: 'EnemyTankRapid', position: { x: 250, y: 1400 }, angle: Math.PI / 2 },
+        { type: 'EnemyTankRapid', position: { x: 250, y: 250 }, angle: Math.PI / 2 },
+        { type: 'EnemyTankRapid', position: { x: 1050, y: 750 }, angle: Math.PI / 2 },
         { type: 'EnemyTankStrong', position: { x: 950, y: 250 }, angle: Math.PI / 2 },
         { type: 'EnemyTankStrong', position: { x: 950, y: 1400 }, angle: Math.PI / 2 },
-        { type: 'EnemyTankStrong', position: { x: 350, y: 750 }, angle: Math.PI / 2 }
+        { type: 'EnemyTankStrong', position: { x: 250, y: 650 }, angle: Math.PI / 2 }
     ]
 };
 
@@ -193,4 +193,3 @@ const LevelRandom: ILevel = {
 };
 
 export const allLevels: ILevel[] = [Level1, Level2, Level3, Level4, Level5, LevelRandom];
-
