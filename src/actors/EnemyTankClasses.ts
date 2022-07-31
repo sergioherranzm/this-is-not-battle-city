@@ -23,7 +23,7 @@ export class EnemyTankRapid extends EnemyTank {
 
 export class EnemyTankHeavy extends EnemyTank {
   constructor(position: Point, angle: number) {
-    super(position, angle, 5, sprite_heavy_1, sprite_heavy_2, 60, 1, 0.8, 400);
+    super(position, angle, 4, sprite_heavy_1, sprite_heavy_2, 60, 1, 0.8, 400);
   };
 };
 

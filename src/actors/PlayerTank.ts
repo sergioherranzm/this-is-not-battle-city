@@ -55,7 +55,7 @@ export class PlayerTank extends Actor {
     this.keyboardMap = keyboardMap;
     this.newPos = position;
     this.newPosGuess = position;
-    this.respawnTimer = { time: -3, active: true };
+    this.respawnTimer = { time: -2, active: true };
     this.tankSpawnPoint = actors.find((act): act is SpawnPlayerP1 => (act instanceof SpawnPlayerP1)) as SpawnPlayerP1;
 
     this.actorSprite = new Image();

@@ -252,7 +252,7 @@ const createNewGame = (levelString: string) => {
 
 
   delay(1300).then(() => {
-    gameGUI.chrono = { time: -3, active: true };
+    gameGUI.chrono = { time: -2, active: true };
     window.requestAnimationFrame(render);
   });
 };
