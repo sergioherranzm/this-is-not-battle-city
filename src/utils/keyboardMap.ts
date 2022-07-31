@@ -4,11 +4,11 @@ export enum CarKeys {
   LEFT,
   RIGHT,
   FIRE
-}
+};
 
 export interface KeyboardMap {
   [key: string]: CarKeys;
-}
+};
 
 export const MAP_P1 = {
   ArrowUp: CarKeys.UP,

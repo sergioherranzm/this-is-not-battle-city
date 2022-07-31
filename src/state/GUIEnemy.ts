@@ -1,7 +1,7 @@
 import { Point } from '../types/Point';
 import { Timer } from '../types/Timer';
-import { GUIItem } from './GUIItem'
-import sprite from '../assets/GUI.png'
+import { GUIItem } from './GUIItem';
+import sprite from '../assets/GUI.png';
 
 
 export class GUIEnemy extends GUIItem {
@@ -19,10 +19,10 @@ export class GUIEnemy extends GUIItem {
 
   update(delta: number): void {
     //Animacion
-    this.timer.time += delta
+    this.timer.time += delta;
     if (this.timer.time >= 0.15) {
       this.xFrame = (this.xFrame + 1) % 3;
-      this.timer.time = 0
+      this.timer.time = 0;
     };
   };
 
@@ -38,13 +38,6 @@ export class GUIEnemy extends GUIItem {
       this.position.y,
       this.size.width,
       this.size.height
-    )
-
-    /*
-    ctx.fillStyle = 'purple';
-    ctx.fillRect(this.position.x, this.position.y, this.size.width, this.size.height);
-    */
-
+    );
   };
-
 };

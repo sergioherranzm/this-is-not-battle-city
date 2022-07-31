@@ -1,19 +1,19 @@
 import { ILevel, IEnemy } from "../types/Level";
 import { allLevels } from './Levels';
-import { actors } from '../script'
+import { actors } from '../script';
 import { DestructibleBlock, NotDestructibleBlock, WaterBlock, SpawnPlayerP1 } from '../actors/MapBlockClasses';
 import { EnemyTankHeavy, EnemyTankRapid, EnemyTankStandard, EnemyTankStrong } from "../actors/EnemyTankClasses";
-import lodash from 'lodash'
-import backgroundRocks from '../assets/background/Ground_Tile_01_A.png'
-import backgroundGrass from '../assets/background/Ground_Tile_02_B.png'
-import backgroundDirt from '../assets/background/Ground_Tile_02_C.png'
+import lodash from 'lodash';
+import backgroundRocks from '../assets/background/Ground_Tile_01_A.png';
+import backgroundGrass from '../assets/background/Ground_Tile_02_B.png';
+import backgroundDirt from '../assets/background/Ground_Tile_02_C.png';
 
 export let chosenLevel: ILevel;
 
 export const MapBuilder = (level: number) => {
 
-  if (level < 0) {
-    //Level random
+  if (level < 0) { //Level random
+
     chosenLevel = allLevels.find(e => e.id === `LevelRandom`) as ILevel;
     chosenLevel.map = getRandomMap();
     chosenLevel.background = getRandomBackground();
@@ -54,27 +54,27 @@ export const MapBuilder = (level: number) => {
   let x_pos = 0;
   let y_pos = 200;
 
-  map.forEach((row, y) => {
+  map.forEach((row) => {
     x_pos = 0;
-    row.forEach((char, x) => {
+    row.forEach((char) => {
       switch (char) {
         case '.': // whitespace
 
           break;
         case '%': //player 1 spawnpoint
-          actors.push(new SpawnPlayerP1({ x: x_pos + w / 2, y: y_pos + h / 2 }))
+          actors.push(new SpawnPlayerP1({ x: x_pos + w / 2, y: y_pos + h / 2 }));
           break;
-        case '*': //enemy spawnpoint
+        /*case '*': //enemy spawnpoint
 
-          break;
+        break;*/
         case 'O': //destrutible block
-          actors.push(new DestructibleBlock({ x: x_pos + w / 2, y: y_pos + h / 2 }))
+          actors.push(new DestructibleBlock({ x: x_pos + w / 2, y: y_pos + h / 2 }));
           break;
         case 'X': //not destrutible block
-          actors.push(new NotDestructibleBlock({ x: x_pos + w / 2, y: y_pos + h / 2 }))
+          actors.push(new NotDestructibleBlock({ x: x_pos + w / 2, y: y_pos + h / 2 }));
           break;
         case 'S': //water block
-          actors.push(new WaterBlock({ x: x_pos + w / 2, y: y_pos + h / 2 }))
+          actors.push(new WaterBlock({ x: x_pos + w / 2, y: y_pos + h / 2 }));
           break;
         default:
           console.log('Character not valid in map template:', char);
@@ -87,24 +87,25 @@ export const MapBuilder = (level: number) => {
 };
 
 const getRandomMap = (): string => {
-  let newMap: string[][] = [[], [], [], [], [], [], [], [], [], [], [], [], []]
+  let newMap: string[][] = [[], [], [], [], [], [], [], [], [], [], [], [], []];
   let probability_y: number;
   let probability_x: number;
   for (let y = 0; y <= 12; y++) {
     for (let x = 0; x <= 12; x++) {
       probability_y = lodash.random(1, 100);
-      if (probability_y < 60) {
+      if (probability_y < 60) { //probabilidad 60% de Whitespace
         newMap[y].push('.');
-      } else if (probability_y >= 60 && probability_y < 85) {
+      } else if (probability_y >= 60 && probability_y < 85) { //probabilidad 15% de Destrutible Block
         newMap[y].push('O');
-      } else if (probability_y >= 85 && probability_y < 95) {
+      } else if (probability_y >= 85 && probability_y < 95) { //probabilidad 10% de Not Destrutible Block
         newMap[y].push('X');
-      } else if (probability_y >= 95 && probability_y <= 100) {
+      } else if (probability_y >= 95 && probability_y <= 100) { //probabilidad 5% de Water Block
         newMap[y].push('S');
       }
     };
   };
 
+  //Añadir punto de spawn del jugador en whitespace aleatorio
   while (true) {
     probability_y = lodash.random(0, 12);
     probability_x = lodash.random(0, 12);
@@ -114,12 +115,17 @@ const getRandomMap = (): string => {
     };
   };
 
-  return newMap.map(y => y.join('')).join('\n')
+  return newMap.map(y => y.join('')).join('\n');
+};
+
+const getRandomBackground = (): string => {
+  const backgroundTiles = [backgroundDirt, backgroundGrass, backgroundRocks];
+  return backgroundTiles[lodash.random(0, 2)];
 };
 
 const pushRandomEnemies = (): void => {
   let numberOfEnemies: number = lodash.random(3, 6);
-  const EnemyTypes = ['EnemyTankStandard', 'EnemyTankRapid', 'EnemyTankStrong', 'EnemyTankHeavy']
+  const EnemyTypes = ['EnemyTankStandard', 'EnemyTankRapid', 'EnemyTankStrong', 'EnemyTankHeavy'];
 
   for (let e = 1; e <= numberOfEnemies; e++) {
     let probability_y: number;
@@ -148,9 +154,4 @@ const pushRandomEnemies = (): void => {
       };
     };
   };
-};
-
-const getRandomBackground = (): string => {
-  const backgroundTiles = [backgroundDirt, backgroundGrass, backgroundRocks];
-  return backgroundTiles[lodash.random(0, 2)];
 };

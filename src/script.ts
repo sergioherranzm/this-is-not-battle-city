@@ -1,4 +1,3 @@
-import { Console } from 'console';
 import { IActor } from './actors/Actor';
 import { GameManager, IGameManager } from './state/GameManager';
 
@@ -11,7 +10,7 @@ const audioPlay = new Audio(audioURL.toString());
 audioURL = new URL('./assets/sounds/start_level.mp3', import.meta.url);
 const audioStartLevel = new Audio(audioURL.toString());
 
-audioURL = new URL('./assets/sounds/music_menu.mp3', import.meta.url); /************ */
+audioURL = new URL('./assets/sounds/music_menu.mp3', import.meta.url);
 const audioMusic = new Audio(audioURL.toString());
 
 audioURL = new URL('./assets/sounds/button_hover.mp3', import.meta.url);
@@ -23,7 +22,7 @@ const audioButtonLevel = new Audio(audioURL.toString());
 audioURL = new URL('./assets/sounds/button_click.mp3', import.meta.url);
 const audioButtonClick = new Audio(audioURL.toString());
 
-//audioMusic.autoplay = true;
+audioMusic.autoplay = true;
 
 audioPause.volume = 1;
 audioPlay.volume = 1;
@@ -70,8 +69,8 @@ window.onload = () => {
   canvas = document.getElementById('canvas') as HTMLCanvasElement;
   ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
-
   button_levels.addEventListener('click', (e) => {
+    audioMusic.autoplay = false;
     audioButtonClick.load();
     audioButtonClick.play();
     levels.classList.remove('hidden');
@@ -79,6 +78,7 @@ window.onload = () => {
   });
 
   button_controls.addEventListener('click', (e) => {
+    audioMusic.autoplay = false;
     audioButtonClick.load();
     audioButtonClick.play();
     controls.classList.remove('hidden');
@@ -229,18 +229,17 @@ window.onload = () => {
 
   if (button_mute.innerHTML === 'Music ON') {
     audioMusic.play();
-  }
+  };
 
 };
 
-
 export let actors: IActor[];
 export let gameGUI: IGameManager;
-let lastFrame = 0;
+let lastFrame: DOMHighResTimeStamp;
 
 const delay = (time: number) => {
   return new Promise(resolve => setTimeout(resolve, time));
-}
+};
 
 const createNewGame = (levelString: string) => {
 
@@ -252,9 +251,9 @@ const createNewGame = (levelString: string) => {
   audioStartLevel.load();
   audioStartLevel.play();
 
-
   delay(1300).then(() => {
-    gameGUI.chrono = { time: -2, active: true };
+    gameGUI.chrono = { time: 0, active: true };
+    lastFrame = performance.now();
     window.requestAnimationFrame(render);
   });
 };
