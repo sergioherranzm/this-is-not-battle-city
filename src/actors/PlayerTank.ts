@@ -20,12 +20,15 @@ export class PlayerTank extends Actor {
   tankAngle: number;
   tankSpeed: number;
   tankMaxSpeed: number;
+  tankBulletDamage: number;
   pressedKeys: string[];
   keyboardMap: KeyboardMap;
   actorSprite: HTMLImageElement;
   activeSprite: string;
   timerTankMove: Timer;
   timerShoot: Timer;
+  timerPowerup: Timer;
+  effectPowerup: string;
   audioShot: HTMLAudioElement;
   audioIdle: HTMLAudioElement;
   audioAcc: HTMLAudioElement;
@@ -46,6 +49,7 @@ export class PlayerTank extends Actor {
     this.size = { width: 73, height: 85 };
     this.tankDefaultAngleSpeed = 500;
     this.tankDefaultMaxSpeed = 300;
+    this.tankBulletDamage = 1;
     this.tankDrawAngle = angle;
     this.tankAngle = this.tankDrawAngle;
     this.pressedKeys = [];
@@ -62,6 +66,8 @@ export class PlayerTank extends Actor {
     this.activeSprite = 'sprite_1';
     this.timerTankMove = { active: true, time: 0 };
     this.timerShoot = { active: true, time: 0 };
+    this.timerPowerup = { active: false, time: 0 };
+    this.effectPowerup = '';
 
     this.loseLiveSprite = new Image();
     this.loseLiveSprite.src = sprite_explosion;
@@ -96,6 +102,10 @@ export class PlayerTank extends Actor {
       this.loseLiveTimer.time += delta;
     };
 
+    if (this.timerPowerup.active === true) {
+      this.timerPowerup.time -= delta;
+    };
+
     if (this.respawnTimer.active === true) {
 
       this.respawnTimer.time += delta;
@@ -121,6 +131,19 @@ export class PlayerTank extends Actor {
       this.bulletImpact = true;
     };
 
+    if (this.timerPowerup.time < 0) {
+      switch (this.effectPowerup) {
+        case '+speed':
+          this.tankDefaultMaxSpeed = 300;
+          break;
+        case '+damage':
+          this.tankBulletDamage = 1;
+          break;
+      };
+      this.timerPowerup = { active: false, time: 0 };
+      this.effectPowerup = '';
+    };
+
 
     //Check life
     if (this.health <= 0) { //Si esta muerto:
@@ -129,6 +152,11 @@ export class PlayerTank extends Actor {
       actors.splice(actorToRemove, 1);
 
     } else if (this.loseLiveTimer.active == true) {////Si esta vivo y ha perdido vida:
+
+      this.timerPowerup = { active: false, time: 0 };
+      this.effectPowerup = '';
+      this.tankDefaultMaxSpeed = 300;
+      this.tankBulletDamage = 1;
 
       if (this.loseLiveTimer.time > 0.2) {
         this.loseLiveFrame++;
@@ -279,7 +307,7 @@ export class PlayerTank extends Actor {
       } else if (mappedKey === CarKeys.FIRE) {
         if (this.timerShoot.time > 0.25) {
           this.audioShot.load();
-          actors.push(new Bullet({ x: this.position.x + (this.size.width / 2 * Math.cos(this.tankAngle)), y: this.position.y + (this.size.height / 2 * Math.sin(this.tankAngle)) }, 'Friend', 1, this.tankAngle, this));
+          actors.push(new Bullet({ x: this.position.x + (this.size.width / 2 * Math.cos(this.tankAngle)), y: this.position.y + (this.size.height / 2 * Math.sin(this.tankAngle)) }, 'Friend', this.tankBulletDamage, this.tankAngle, this));
           this.audioShot.play();
           this.timerShoot.time = 0;
         };

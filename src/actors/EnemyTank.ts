@@ -104,6 +104,7 @@ export class EnemyTank extends Actor {
         gameGUI.score += this.tankScore;
         const actorToRemove = actors.indexOf(this);
         actors.splice(actorToRemove, 1);
+        gameGUI.setPowerUp();
       };
 
     } else { //Si esta vivo:
