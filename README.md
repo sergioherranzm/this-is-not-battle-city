@@ -352,7 +352,6 @@ const pushRandomEnemies = (): void => {
 
 Debido al corto perdiodo de desarrollo disponible, ha habido ciertas funcionalidades que no han sido implementadas en la versión final:
 
-- Power-ups (recuperar vida, disparo potente, mayor velocidad, congelación de tiempo...)
 - Multijugador local
 - Modo supervivencia
 - Aparición aleatoria de enemigos
