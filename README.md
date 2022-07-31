@@ -10,9 +10,6 @@
   </a>
 </p>
 
-<!-- A spacer -->
-<p>&nbsp;</p>
-
 <p align="center">
     <img src="/public/title.png" alt="this-is-not-battle-city logo"/>
 </p>
@@ -109,6 +106,8 @@ npm run dev
     │   ├── PlayerTank.ts
     │   ├── EnemyTank.ts
     │   ├── EnemyTankClasses.ts
+    │   ├── PowerUp.ts
+    │   ├── PowerUpClasses.ts
     │   ├── MapBlock.ts
     │   └── MapBlockClasses.ts
     ├── utils
