@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="shortcut icon" href="/this-is-not-battle-city/favicon.png" type="image/png">
+  <title>Document</title>
+  <link rel="stylesheet" href="/this-is-not-battle-city/style.css" />
+  <script type="module" crossorigin src="/this-is-not-battle-city/assets/index.e9f2ead4.js"></script>
+</head>
+
+<body>
+  <div id="container">
+    <div id="controls-container" class="hidden">
+      <div class="enemt-types flex-container-column">
+        <div class="movement-container flex-container-column">
+          <h1>Controls</h1>
+          <p>Movement: &larr; &uarr; &darr; &rarr;</p>
+          <p>Shooting: Ctrl</p>
+          <p>Pause/Unpause: p</p>
+          <p>Quit: Esc</p>
+        </div>
+        <div class="enemies-container flex-container-column">
+          <h1>Enemy Tanks</h1>
+          <div class="enemy-types flex-container-row">
+            <div class="flex-container-column"> <img src="/this-is-not-battle-city/EnemyStandard_Tank_A.png" alt="EnemyStandard" width="40px"
+                height="40px">
+              <h4>NORMAL</h4>
+            </div>
+            <div class="flex-container-column"> <img src="/this-is-not-battle-city/EnemyRapid_Tank_A.png" alt="EnemyRapid" width="40px"
+                height="40px">
+              <h4>RAPID</h4>
+              <p>++ speed</p>
+            </div>
+            <div class="flex-container-column"> <img src="/this-is-not-battle-city/EnemyStrong_Tank_A.png" alt="EnemyStrong" width="40px"
+                height="40px">
+              <h4>STRONG</h4>
+              <p>+ life</p>
+              <p>+ power</p>
+              <p>- speed</p>
+            </div>
+            <div class="flex-container-column"> <img src="/this-is-not-battle-city/EnemyHeavy_Tank_A.png" alt="EnemyHeavy" width="40px"
+                height="40px">
+              <h4>HEAVY</h4>
+              <p>++ life</p>
+              <p>-- speed</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button id="back_controls">Back to menu</button>
+    </div>
+    <canvas id="canvas" width="1300" height="1500" class="hidden"></canvas>
+    <div id="level-container" class="hidden">
+      <div class="levelButtons flex-container-column">
+        <button id="level1" class="buttonLevel">Level 1</button>
+        <button id="level2" class="buttonLevel">Level 2</button>
+        <button id="level3" class="buttonLevel">Level 3</button>
+        <button id="level4" class="buttonLevel">Level 4</button>
+        <button id="level5" class="buttonLevel">Level 5</button>
+        <button id="levelRandom">Create Level</button>
+      </div>
+      <button id="back_levels">Back to menu</button>
+    </div>
+    <div id="menu-container" class="">
+      <button id="levels">Play game</button>
+      <button id="controls">Instructions</button>
+    </div>
+  </div>
+  <button id="muteMusic">Music ON</button>
+  
+</body>
+
+</html>
