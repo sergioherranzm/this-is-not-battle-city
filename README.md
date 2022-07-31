@@ -2,7 +2,9 @@
 
 # This is not Battle City
 
-![map2 img](https://sergioherranzm.github.io/this-is-not-battle-city/map2.jpg) ![map2 img](https://sergioherranzm.github.io/this-is-not-battle-city/map2.jpg)
+![map2 img](https://sergioherranzm.github.io/this-is-not-battle-city/map2.jpg)
+
+![map2 img](https://sergioherranzm.github.io/this-is-not-battle-city/map2.jpg)
 
 
 
@@ -14,13 +16,14 @@
 1. Descripción del proyecto
 2. Tecnologías empleadas
 3. Instalación
-4. Estructura del proyecto
+4. [Estructura del proyecto](#structure)
 
 
 
 
 ## Descripción del proyecto
 
+Este proyecto....
 
 
 ## Technologías empleadas
@@ -50,6 +53,8 @@ Ejecutamos el script:
 ```js
 npm run dev
 ```
+
+## Estructura del proyecto <a name="structure"></a>
 
 
 
