@@ -69,22 +69,6 @@ window.onload = () => {
   canvas = document.getElementById('canvas') as HTMLCanvasElement;
   ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
-  button_levels.addEventListener('click', (e) => {
-    audioMusic.autoplay = false;
-    audioButtonClick.load();
-    audioButtonClick.play();
-    levels.classList.remove('hidden');
-    menu.classList.add('hidden');
-  });
-
-  button_controls.addEventListener('click', (e) => {
-    audioMusic.autoplay = false;
-    audioButtonClick.load();
-    audioButtonClick.play();
-    controls.classList.remove('hidden');
-    menu.classList.add('hidden');
-  });
-
   button_back_controls.addEventListener('click', (e) => {
     audioButtonClick.load();
     audioButtonClick.play();
@@ -175,6 +159,28 @@ window.onload = () => {
         button_mute.innerHTML = 'Music ON';
       };
     };
+  });
+
+  button_levels.addEventListener('click', (e) => {
+    audioMusic.autoplay = false;
+    if (button_mute.innerHTML === 'Music ON') {
+      audioMusic.play();
+    };
+    audioButtonClick.load();
+    audioButtonClick.play();
+    levels.classList.remove('hidden');
+    menu.classList.add('hidden');
+  });
+
+  button_controls.addEventListener('click', (e) => {
+    audioMusic.autoplay = false;
+    if (button_mute.innerHTML === 'Music ON') {
+      audioMusic.play();
+    };
+    audioButtonClick.load();
+    audioButtonClick.play();
+    controls.classList.remove('hidden');
+    menu.classList.add('hidden');
   });
 
   button_levels.addEventListener('mouseover', (e) => {
@@ -289,7 +295,7 @@ const render = (time: number) => {
 
   if (!canvas.classList.contains('hidden')) {
     window.requestAnimationFrame(render);
-  }
+  };
 
 };
 
@@ -317,7 +323,7 @@ document.body.addEventListener('keydown', (e) => {
         gameGUI.audioWin.load();
         if (button_mute.innerHTML === 'Music ON') {
           audioMusic.play();
-        }
+        };
       };
     } else {
       audioButtonClick.load();
