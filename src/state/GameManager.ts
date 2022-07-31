@@ -298,7 +298,7 @@ export class GameManager implements IGameManager {
     if (playerP1.timerPowerup.active === false && this.existPowerUp.active === false) {
       const probability = lodash.random(1, 100);
 
-      if (probability < 26) {
+      if (probability < 33) {
         let probability_y: number;
         let probability_x: number;
         const typesPowerUp = ['+life', '+speed', '+damage'];
