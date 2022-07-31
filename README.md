@@ -6,7 +6,7 @@
     <img src="https://badges.frapsoft.com/typescript/code/typescript.svg?v=101" alt="typescript">
   </a>
   <a href="https://shields.io/">
-    <img src="https://img.shields.io/badge/built%20with-VITE-purple.svg" alt="vite">
+    <img src="https://img.shields.io/badge/built%20with-vite-purple.svg" alt="vite">
   </a>
 </p>
 
@@ -14,12 +14,15 @@
 <p>&nbsp;</p>
 
 <p align="center">
-    <img src="/public/title.png" alt="this-is-not-battle-city logo" width="150"/>
+    <img src="/public/title.png" alt="this-is-not-battle-city logo"/>
 </p>
 
 # This is not Battle City
 
 ### Puedes jugar *[aquí](https://sergioherranzm.github.io/this-is-not-battle-city/)*.&nbsp; &nbsp;[![Website perso.crans.org](https://img.shields.io/website-up-down-green-red/https/perso.crans.org.svg)](https://perso.crans.org/)
+
+<!-- A spacer -->
+<p>&nbsp;</p>
 
 ![test gif](/public/sample-gif.gif)
 
@@ -35,7 +38,7 @@
 - [Dependencias](#tech)
 - [Licencia](#license)
 - [Agradecimientos](#grats)
-- [Menciones y bibliografía ](#grats)
+<!-- - [Menciones y bibliografía ](#grats)-->
 
 ## Descripción del proyecto <a name="description"></a>
 
@@ -128,9 +131,9 @@ npm run dev
 
 ### Detección de inputs
 
-Para la detección de input de movimiento del tanque del jugador en principio se utilizo unos simples EventListeners de KeyDown/KeyUp. Sin embargo, este método presentaba varios problemas si se pulsaban varias teclas a la vez:
-- Al mantener las teclas presionada, el evento KeyDown se ejecutaba de forma repetida en una de ellas, pero en la otra sólo se registraba una vez
-- Cuando se suelta una de las dos teclas se ejecutará un evento KeyUp, y se comporta como si no quedase ninguna tecla pulsada.
+Para la detección de input de movimiento del tanque del jugador, en principio se utilizo unos simples EventListeners de KeyDown/KeyUp que cambiaban directamente las propiedades del tanque. Sin embargo, este método presentaba varios problemas si se pulsaban varias teclas a la vez:
+- Al mantener las teclas presionadas, el evento KeyDown se ejecutaba de forma repetida en una de ellas, pero en la otra sólo se registraba una vez.
+- Cuando se soltaba una de las dos teclas, se ejecutaba un evento KeyUp, y se comportaba como si no quedase ninguna tecla pulsada.
 
 ```js
 keyboard_event_down(key: string): void {
@@ -160,17 +163,16 @@ keyboard_event_up(key: string): void {
 };
 ```
 
-Como solución se implementó una funcion intermedia ***checkPressedKeys()*** que actúa de filtro entre los eventos de las teclas y los movimientos del tanque. Esto se consigue definiendo la propiedad ***this.pressedKeys*** que es un array que contiene las teclas que están actualmente presionadas (sin repetir items).
+Como **solución** se implementó una funcion intermedia ***checkPressedKeys()*** que actúa de filtro entre los eventos de las teclas y los movimientos del tanque. Esto se consigue definiendo la propiedad ***this.pressedKeys*** que es un array que contiene las teclas que están actualmente presionadas (controlando que no haya items repetidos).
 
-De este modo, lo que hacen los eventos KeyDown/KeyUp es meter y sacar items de este array y no actúan directamente sobre el movimiento del tanque. Además, por el hecho de ser un array en vez de un objeto, *this.pressedKeys* nos permite saber el orden en el que el jugador ha pulsado las teclas, de modo que, al haber varias teclas pulsadas, el tanque siempre se moverá en la dirección de *this.pressedKeys[0]*.
+De este modo, lo que hacen los eventos KeyDown/KeyUp es meter y sacar items de este array, y no actúan directamente sobre el movimiento del tanque. Además, por el hecho de ser un array en vez de un objeto, *this.pressedKeys* nos permite saber el orden en el que el jugador ha pulsado las teclas, de modo que, al haber varias teclas pulsadas, el tanque siempre se moverá en la dirección de *this.pressedKeys[0]*.
 
 
 ```js
-pressedKeys: string[];
 this.pressedKeys = [];
-
 ...
-
+...
+...
 checkPressedKeys() {
     if (this.pressedKeys.length === 0) {
         this.tankMaxSpeed = 0;
@@ -227,7 +229,7 @@ keyboard_event_up(key: string): void {
 
 ### Generación procedural de mapas
 
-Unas de las funcionalidades adicionales que se  ha añadido es la herramienta para generar mapas de forma procedural, dando lugar a niveles aleatorios, a parte de los 5 mapas prediseñados ya incluidos.
+Unas de las funcionalidades adicionales que se  ha añadido, es la herramienta para generar mapas de forma procedural, dando lugar a niveles aleatorios, a parte de los 5 mapas prediseñados ya incluidos.
 
 Para explicar esta funcionalidad es necesario primero mostrar la estructura de un nivel:
 
@@ -367,8 +369,8 @@ Debido al corto perdiodo de desarrollo disponible, ha habido ciertas funcionalid
 
 ## Agradecimientos <a name="grats"></a>
 
-Agradecimientos al profesor del bootcamp Luis Miguel Feijoo por toda la ayuda prestada y los conocimientos transmitidos
+Agradecimientos al profesor del bootcamp Luis Miguel Feijoo por toda la ayuda prestada y los conocimientos transmitidos.
 
-También a mis compañeros de bootcamp por todo el apoyo y el buen rollo, y a Core Code School por las facilidades que dan y la calidad de su enseñanza.
+También a mis compañeros del bootcamp por todo el apoyo y el buen rollo; y a Core Code School por las facilidades que dan y la calidad de su enseñanza.
 
 <!-- ## Menciones y bibliografía <a name="mentions"></a> -->
