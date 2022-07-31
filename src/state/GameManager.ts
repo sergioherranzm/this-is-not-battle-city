@@ -6,10 +6,14 @@ import { MapBuilder, chosenLevel } from './MapBuilder';
 import { SpawnPlayerP1 } from '../actors/MapBlockClasses';
 import { PlayerTank } from '../actors/PlayerTank';
 import { EnemyTank } from '../actors/EnemyTank';
+import { PowerUp } from '../actors/PowerUp';
+import { PowerUpLife, PowerUpSpeed, PowerUpDamage } from '../actors/PowerUpClasses';
 import { Timer } from '../types/Timer';
+import lodash from 'lodash';
 import { MAP_P1, MAP_P2 } from '../utils/keyboardMap';
 const audioURLWin = new URL('../assets/sounds/win.mp3', import.meta.url);
 const audioURLLose = new URL('../assets/sounds/lose.mp3', import.meta.url);
+const audioURLAppear = new URL('../assets/sounds/powerup_appear.mp3', import.meta.url);
 
 export interface IGameManager {
   livesP1: number;
@@ -23,10 +27,12 @@ export interface IGameManager {
   aHearthsP2?: IGUIItem[];
   aEnemies: IGUIItem[];
   backgroundSprite: HTMLImageElement;
+  existPowerUp: Timer;
   pause: boolean;
   winState: boolean;
   loseState: boolean;
   //escapeState: boolean;
+  audioAppearPowerUp: HTMLAudioElement;
   audioWin: HTMLAudioElement;
   audioWinPlayed: boolean;
   audioLose: HTMLAudioElement;
@@ -34,6 +40,7 @@ export interface IGameManager {
   draw: (ctx: CanvasRenderingContext2D, delta: number) => void;
   update: (delta: number) => void;
   paintBackground: (ctx: CanvasRenderingContext2D) => void;
+  setPowerUp: () => void;
 };
 
 export class GameManager implements IGameManager {
@@ -48,10 +55,12 @@ export class GameManager implements IGameManager {
   aHearthsP2?: IGUIItem[];
   aEnemies: IGUIItem[];
   backgroundSprite: HTMLImageElement;
+  existPowerUp: Timer;
   pause: boolean;
   winState: boolean;
   loseState: boolean;
   //escapeState: boolean;
+  audioAppearPowerUp: HTMLAudioElement;
   audioWin: HTMLAudioElement;
   audioWinPlayed: boolean;
   audioLose: HTMLAudioElement;
@@ -69,11 +78,14 @@ export class GameManager implements IGameManager {
     this.aHearthsP1 = [];
     this.aEnemies = [];
 
+    this.existPowerUp = { time: 0, active: false };
     this.pause = false;
     this.winState = false;
     this.loseState = false;
     //this.escapeState = false;
 
+    this.audioAppearPowerUp = new Audio(audioURLAppear.toString());
+    this.audioAppearPowerUp.volume = 0.3;
     this.audioWin = new Audio(audioURLWin.toString());
     this.audioWin.volume = 0.5;
     this.audioWinPlayed = false;
@@ -94,6 +106,17 @@ export class GameManager implements IGameManager {
   update(delta: number): void {
     if (this.chrono.active === true) {
       this.chrono.time += delta;
+    };
+    if (this.existPowerUp.active === true) {
+      this.existPowerUp.time -= delta;
+    };
+
+    if (this.existPowerUp.time < 0) {
+      this.existPowerUp = { active: false, time: 0 };
+      actors.filter((act): act is PowerUp => (act instanceof PowerUp)).forEach((t) => {
+        const actorToRemove = actors.indexOf(t);
+        actors.splice(actorToRemove, 1);
+      });
     };
 
     //Lives
@@ -264,6 +287,50 @@ export class GameManager implements IGameManager {
     for (let y = 200; y < ctx.canvas.height; y += 200) {
       for (let x = 0; x < ctx.canvas.width; x += 200) {
         ctx.drawImage(this.backgroundSprite, x, y, 200, 200);
+      };
+    };
+  };
+
+  setPowerUp(): void {
+
+    const playerP1 = actors.filter((act): act is PlayerTank => (act instanceof PlayerTank))[0];
+
+    if (playerP1.timerPowerup.active === false && this.existPowerUp.active === false) {
+      const probability = lodash.random(1, 100);
+
+      if (probability < 33) {
+        let probability_y: number;
+        let probability_x: number;
+        const typesPowerUp = ['+life', '+speed', '+damage'];
+        let chosenPowerUp: string;
+        if (playerP1.health >= 3) {
+          chosenPowerUp = typesPowerUp[lodash.random(1, 2)];
+        } else {
+          chosenPowerUp = typesPowerUp[lodash.random(0, 2)];
+        };
+
+        while (true) {
+          probability_y = lodash.random(0, 12);
+          probability_x = lodash.random(0, 12);
+          let actualMap = chosenLevel.map.split('\n').map(y => y.split(''));
+          if (actualMap[probability_y][probability_x] === '.') {
+            this.existPowerUp = { time: 10, active: true };
+            this.audioAppearPowerUp.load();
+            this.audioAppearPowerUp.play();
+            switch (chosenPowerUp) {
+              case '+life':
+                actors.push(new PowerUpLife({ x: (probability_x * 100) + 50, y: (probability_y * 100) + 250 }));
+                break;
+              case '+speed':
+                actors.push(new PowerUpSpeed({ x: (probability_x * 100) + 50, y: (probability_y * 100) + 250 }));
+                break;
+              case '+damage':
+                actors.push(new PowerUpDamage({ x: (probability_x * 100) + 50, y: (probability_y * 100) + 250 }));
+                break;
+            };
+            break;
+          };
+        };
       };
     };
   };
