@@ -23,6 +23,8 @@ const audioButtonLevel = new Audio(audioURL.toString());
 audioURL = new URL('./assets/sounds/button_click.mp3', import.meta.url);
 const audioButtonClick = new Audio(audioURL.toString());
 
+//audioMusic.autoplay = true;
+
 audioPause.volume = 1;
 audioPlay.volume = 1;
 audioStartLevel.volume = 1;

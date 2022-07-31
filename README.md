@@ -1,4 +1,4 @@
-![This is not Battle City](/title.png)
+![This is not Battle City](https://sergioherranzm.github.io/this-is-not-battle-city/title.png)
 
 
 
