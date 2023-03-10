@@ -21,7 +21,7 @@
   "bugs": {
     "url": "https://github.com/sergioherranzm/this-is-not-battle-city/issues"
   },
-  "homepage": "https://github.com/sergioherranzm/this-is-not-battle-city#readme",
+  "homepage": "http://game.serhe.es",
   "devDependencies": {
     "@types/lodash": "^4.14.182",
     "@types/node": "^18.0.6",
